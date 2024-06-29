@@ -6,6 +6,8 @@ import { CommunityService } from './communites/services/community.service';
 import { CommunityModule } from './communites/community.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     }),
     ConfigModule.forRoot({ isGlobal: true }),
     CommunityModule,
+    UsersModule,
+    AuthModule,
   ],
   controllers: [AppController, CommunityController],
   providers: [AppService, CommunityService],
