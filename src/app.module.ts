@@ -1,4 +1,5 @@
-import { Module } from '@nestjs/common';
+import { Module, Logger, MiddlewareConsumer, NestModule } from '@nestjs/common';
+import { LoggerMiddleware } from './logger/logger.middleware';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CommunityController } from './communites/controllers/community.controller';
@@ -8,9 +9,15 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { User } from './entities/user.entity';
+import { Community } from './entities/community.entity';
+import { Comment } from './entities/comment.entity';
+import { Like } from './entities/like.entity';
+import { Report } from './entities/report.entity';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: process.env.DB_HOST,
@@ -18,13 +25,13 @@ import { AuthModule } from './auth/auth.module';
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [],
+      entities: [User, Community, Comment, Like, Report],
       synchronize: false,
       logging: true,
       keepConnectionAlive: true,
       charset: 'utf8mb4',
     }),
-    ConfigModule.forRoot({ isGlobal: true }),
+
     CommunityModule,
     UsersModule,
     AuthModule,

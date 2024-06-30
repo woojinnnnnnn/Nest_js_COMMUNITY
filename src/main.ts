@@ -2,12 +2,16 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { winstonLogger } from './common/utils/winston.util';
+import { LoggerMiddleware } from './logger/logger.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: winstonLogger
+    logger: winstonLogger,
   });
-  app.useGlobalPipes(new ValidationPipe())
-  await app.listen(process.env.PORT || 3000);
+  const port = process.env.PORT;
+  app.useGlobalPipes(new ValidationPipe());
+  app.use(LoggerMiddleware);
+  await app.listen(port);
+  console.log(`---------- SERVER_START_ON_PORT ${port} ----------`);
 }
 bootstrap();

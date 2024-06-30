@@ -1,6 +1,6 @@
 import { utilities, WinstonModule } from 'nest-winston';
-import winstonDaily from 'winston-daily-rotate-file';
 import * as winston from 'winston';
+const winstonDailyRotateFile = require('winston-daily-rotate-file')
 
 const env = process.env.NODE_LV;
 const logDir = __dirname + '/../../logs'; // log 파일을 관리할 폴더
@@ -36,8 +36,8 @@ export const winstonLogger = WinstonModule.createLogger({
     }),
 
     // info, warn, error 로그는 파일로 관리
-    new winstonDaily(dailyOptions('info')),
-    new winstonDaily(dailyOptions('warn')),
-    new winstonDaily(dailyOptions('error')),
+    new winstonDailyRotateFile(dailyOptions('info')),
+    new winstonDailyRotateFile(dailyOptions('warn')),
+    new winstonDailyRotateFile(dailyOptions('error')),
   ],
 });
