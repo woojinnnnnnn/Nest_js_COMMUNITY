@@ -10,6 +10,7 @@ import {
 import { Community } from './community.entity';
 import { Comment } from './comment.entity';
 import { Like } from './like.entity';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 export enum UserStatus {
   ADMIN = 'ADMIN',
@@ -21,9 +22,18 @@ export class User {
   @PrimaryGeneratedColumn({ type: 'int' })
   id: number;
 
+  @IsEmail()
+  @IsNotEmpty()
   @Column({ type: 'varchar' })
   email: string;
 
+  @IsString()
+  @IsNotEmpty()
+  @Column({ type: 'varchar' })
+  nickName: string;
+
+  @IsString()
+  @IsNotEmpty()
   @Column({ type: 'varchar', select: false })
   password: string;
 

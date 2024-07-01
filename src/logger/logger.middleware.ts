@@ -9,7 +9,7 @@ import { Request, Response, NextFunction } from 'express';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
-  private logger = new Logger('HTTP'); // 이걸로 해결..?
+  private logger = new Logger('HTTP'); // HTTP 프로토콜
 
   use(req: Request, res: Response, next: NextFunction) {
     // 요청 객체로부터 ip, http method, url, user agent를 받아온 후

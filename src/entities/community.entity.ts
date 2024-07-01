@@ -24,6 +24,8 @@ export class Community {
   @Column({ type: 'varchar' })
   title: string;
 
+  @IsString()
+  @IsNotEmpty()
   @Column({ type: 'varchar' })
   content: string;
 

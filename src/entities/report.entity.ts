@@ -1,3 +1,4 @@
+import { IsNotEmpty, IsString } from "class-validator";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 export enum reportTag {
@@ -11,6 +12,8 @@ export class Report {
       @PrimaryGeneratedColumn({ type: 'int' })
       id: number
 
+      @IsNotEmpty()
+      @IsString()
       @Column({ type: 'varchar' })
       reason: string
 
