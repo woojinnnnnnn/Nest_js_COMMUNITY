@@ -10,9 +10,11 @@ async function bootstrap() {
     logger: winstonLogger,
   });
   // HTTP 예외 처리 필터 -------------------------------------------------------
-  app.useGlobalFilters(new HttpExceptionFilter())
+  app.useGlobalFilters(new HttpExceptionFilter());
   // class-validation -------------------------------------------------------
   app.useGlobalPipes(new ValidationPipe());
+  // CORS -------------------------------------------------------------------
+  app.enableCors({ origin: true, credentials: true }); // origin 부분에 특정 URL 작성.
   await app.listen(port);
   console.log(`---------- SERVER_START_ON_PORT ${port} ----------`);
 }
