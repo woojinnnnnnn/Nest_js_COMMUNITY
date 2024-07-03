@@ -66,7 +66,7 @@ export class AuthService {
       token: this.jwtService.sign(payload),
     };
   }
-
+  // 테스트 로컬 로그인 방식 ------------------------------------------------------------------------------------
   async testSignIn(body: LoginRequestDto) {
     const { email, password } = body;
 
