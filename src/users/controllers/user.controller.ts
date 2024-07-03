@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { HttpExceptionFilter } from 'src/common/exceptions/http-exception.filter';
 import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
-import { UsersService } from '../services/users.service';
+import { UserService } from '../services/user.service';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { UserInfo } from 'src/common/decorators/user.decorator';
 
@@ -18,7 +18,7 @@ import { UserInfo } from 'src/common/decorators/user.decorator';
 @UseInterceptors(SuccessInterceptor)
 @UseFilters(HttpExceptionFilter)
 export class UsersController {
-  constructor(private readonly userService: UsersService) {}
+  constructor(private readonly userService: UserService) {}
 
   @UseGuards(JwtAuthGuard) // 인증 처리
   @Get('info')

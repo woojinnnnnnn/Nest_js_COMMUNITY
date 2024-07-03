@@ -7,7 +7,7 @@ import { CommunityService } from './communites/services/community.service';
 import { CommunityModule } from './communites/community.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersModule } from './users/users.module';
+import { UsersModule } from './users/user.module';
 import { AuthModule } from './auth/auth.module';
 import { User } from './entities/user.entity';
 import { Community } from './entities/community.entity';

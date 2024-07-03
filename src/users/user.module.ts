@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { UsersController } from './controllers/users.controller';
-import { UsersService } from './services/users.service';
+import { UsersController } from './controllers/user.controller';
+import { UserService } from './services/user.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { PassportModule } from '@nestjs/passport';
@@ -20,6 +20,6 @@ import { ConfigModule } from '@nestjs/config';
     }),
   ],
   controllers: [UsersController],
-  providers: [UsersService, AuthRepository, JwtStrategy],
+  providers: [UserService, AuthRepository, JwtStrategy],
 })
 export class UsersModule {}

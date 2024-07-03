@@ -67,6 +67,41 @@ export class AuthService {
     };
   }
 
+  async testSignIn(body: LoginRequestDto) {
+    const { email, password } = body;
+
+    const user = await this.authRepository.findUserByEmail(email);
+    if (!user) {
+      throw new UnauthorizedException(`Can't Find User..`);
+    }
+
+    const isPasswordValidated: boolean = await bcrypt.compare(
+      password,
+      user.password,
+    );
+    if (!isPasswordValidated) {
+      throw new UnauthorizedException(`Please Check Email Or Password`);
+    }
+
+    const accessToken = this.generateAccessToken({
+      id: user.id,
+      email: user.email,
+      nickName: user.nickName,
+    });
+
+    const refreshToken = this.generateRefreshToken(user.id);
+
+    await this.authRepository.hashedRefreshToken(
+      user.id,
+      refreshToken.refreshToken,
+    );
+
+    return {
+      accessToken: accessToken.accessToken,
+      refreshToken: refreshToken.refreshToken,
+    };
+  }
+
   // AccessToken CREATE -----------------------------------------------------------------------
   generateAccessToken(userInfoDto: UserInfoDto) {
     const accessToken = this.jwtService.sign(userInfoDto, {
@@ -78,7 +113,7 @@ export class AuthService {
 
   // RefreshToken CREATE -----------------------------------------------------------------------
   generateRefreshToken(id: any) {
-    const payload = { id };// refresh 토큰에 담을 값.
+    const payload = { id }; // refresh 토큰에 담을 값.
     const refreshToken = this.jwtService.sign(payload, {
       secret: this.configService.get<string>('RT_JWT_SECRET'),
       expiresIn: '7d',
@@ -100,5 +135,10 @@ export class AuthService {
     } else {
       return false;
     }
+  }
+  compareTokenExpiration(exp: number) {
+    const time = new Date().getTime() / 1000;
+    const isExpired = exp < time ? true : false;
+    return isExpired;
   }
 }

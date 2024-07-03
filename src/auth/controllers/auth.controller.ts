@@ -38,4 +38,9 @@ export class AuthController {
   signOut() {
     return 'signOut';
   }
+
+  @Post('testSignIn')
+  testSignIn(@Body() body: LoginRequestDto) {
+    return this.authService.testSignIn(body)
+  }
 }
