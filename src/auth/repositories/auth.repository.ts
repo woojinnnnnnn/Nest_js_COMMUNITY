@@ -9,6 +9,7 @@ import { User } from 'src/entities/user.entity';
 import { SignUpRequestDto } from 'src/users/dtos/signup.req.dto';
 import { Repository } from 'typeorm';
 
+// auth 에는 레포 가 없고 User <- 에서 만들어야 했는데 이미 늦었다..
 @Injectable()
 export class AuthRepository {
   constructor(
@@ -41,6 +42,19 @@ export class AuthRepository {
   async findUserByNickName(nickName: string) {
     try {
       const user = await this.authRepository.findOne({ where: { nickName } });
+      return user;
+    } catch (error) {
+      throw new HttpException('Server Error', 500);
+    }
+  }
+  
+  // 고윳값 기준 유저 검색. -------------------------------------------------------------------------
+  async findUserById(id: any) {
+    try {
+      const user = await this.authRepository.findOne({
+        where: { id },
+        select: ['id', 'email', 'nickName'],
+      });
       return user;
     } catch (error) {
       throw new HttpException('Server Error', 500);

@@ -41,6 +41,7 @@ export class AuthService {
       return user.readOnlyData;
   }
 
+  // 로그인 ------------------------------------------------------------------------------------
   async signIn(body: LoginRequestDto) {
       const { email, password } = body;
 
@@ -48,7 +49,7 @@ export class AuthService {
       if (!user) {
         throw new UnauthorizedException(`Can't Find User..`);
       }
-      console.log('User found:', user);
+      
       const isPasswordValidated: boolean = await bcrypt.compare(
         password,
         user.password,
@@ -57,7 +58,7 @@ export class AuthService {
         throw new UnauthorizedException(`Please Cheack Email Or Password`);
       }
 
-      const payload = { email: email, sub: user.id };
+      const payload = { sub: user.id, email: email };
       return {
         token: this.jwtService.sign(payload),
       };

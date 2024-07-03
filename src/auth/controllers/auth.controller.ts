@@ -4,6 +4,7 @@ import {
   Get,
   HttpException,
   Post,
+  Req,
   UseFilters,
   UseInterceptors,
 } from '@nestjs/common';
@@ -36,11 +37,5 @@ export class AuthController {
   @Post('signOut')
   signOut() {
     return 'signOut';
-  }
-
-  // 이미지 업로드 예정 ?? -------------------------------------------------------------------------
-  @Post()
-  uploadImg() {
-    return 'img';
   }
 }
