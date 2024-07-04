@@ -5,6 +5,7 @@ import {
   HttpException,
   Post,
   Req,
+  Res,
   UseFilters,
   UseInterceptors,
 } from '@nestjs/common';
@@ -35,10 +36,10 @@ export class AuthController {
 
   // 로그아웃. -------------------------------------------------------------------------
   @Post('signOut')
-  signOut() {
-    return 'signOut';
+  signOut(@Req() req, @Res() res) {
   }
 
+  // 본 로그인 로직 ? 서비스 로직 제외 하고 많이 다른건 없음.-------------------------------------
   @Post('testSignIn')
   testSignIn(@Body() body: LoginRequestDto) {
     return this.authService.testSignIn(body)

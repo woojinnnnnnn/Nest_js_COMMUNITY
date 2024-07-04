@@ -66,6 +66,7 @@ export class AuthService {
       token: this.jwtService.sign(payload),
     };
   }
+  
   // 테스트 로컬 로그인 방식 ------------------------------------------------------------------------------------
   async testSignIn(body: LoginRequestDto) {
     const { email, password } = body;
@@ -136,6 +137,8 @@ export class AuthService {
       return false;
     }
   }
+
+  // TokenExpirationEffectiveness ------------------------------------------------------------------
   compareTokenExpiration(exp: number) {
     const time = new Date().getTime() / 1000;
     const isExpired = exp < time ? true : false;

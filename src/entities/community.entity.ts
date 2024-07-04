@@ -29,8 +29,8 @@ export class Community {
   @Column({ type: 'varchar' })
   content: string;
 
-  @Column({ type: 'int' })
-  veiwCount: number;
+  @Column({ type: 'int', default: 0 }) 
+  veiwCount: number | null;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;

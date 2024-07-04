@@ -12,7 +12,7 @@ import { HttpExceptionFilter } from 'src/common/exceptions/http-exception.filter
 import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
 import { UserService } from '../services/user.service';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
-import { UserInfo } from 'src/common/decorators/user.decorator';
+// import { UserInfo } from 'src/common/decorators/user.decorator';
 
 @Controller('users')
 @UseInterceptors(SuccessInterceptor)
@@ -22,8 +22,10 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard) // 인증 처리
   @Get('info')
-  getUserInfo(@UserInfo() user) {
-    return user;
+  getUserInfo(@Req() request) {
+    const user = request.user;
+    const { id, email, nickName } = user;
+    return { id, email, nickName }
   }
 
   // 이미지 업로드 예정 ?? -------------------------------------------------------------------------

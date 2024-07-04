@@ -6,8 +6,9 @@ import { User } from 'src/entities/user.entity';
 import { AuthRepository } from './repositories/auth.repository';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtStrategy } from './jwt/jwt.strategy';
 import { ConfigModule } from '@nestjs/config';
+import { AccessTokenStrategy } from './jwt/accessToken.strategy';
+import { RefreshTokenStrategy } from './jwt/refreshToken.strategy';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ConfigModule } from '@nestjs/config';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, AuthRepository, JwtStrategy],
+  providers: [AuthService, AuthRepository, AccessTokenStrategy, RefreshTokenStrategy],
+  exports: [AuthService, AuthRepository]
 })
 export class AuthModule {}
