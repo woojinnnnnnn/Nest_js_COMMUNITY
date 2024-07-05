@@ -53,4 +53,5 @@ export class Community {
 
   @OneToMany(() => Like, (like) => like.community)
   like: Like;
+      community: { id: number; };
 }

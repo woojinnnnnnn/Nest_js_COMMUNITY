@@ -1,5 +1,5 @@
 export type Payload = {
-      sub: string
+      sub: number;
       email: string
       nickName: string;
       role: string;

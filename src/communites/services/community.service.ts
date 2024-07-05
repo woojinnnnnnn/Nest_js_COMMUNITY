@@ -6,37 +6,58 @@ import {
 } from '@nestjs/common';
 import { CommunityRepository } from '../repositories/community.repository';
 import { CreateComuDto } from '../dtos/create.post.dto';
-import { FindAllComuDto } from '../dtos/find.all.post.dto';
+import { UpdateComuDto } from '../dtos/update.post.dto';
+import { AuthRepository } from 'src/auth/repositories/auth.repository';
+import { Community } from 'src/entities/community.entity';
 
 @Injectable()
 export class CommunityService {
-  constructor(private readonly communityRepostoty: CommunityRepository) {}
+  constructor(
+    private readonly communityRepostoty: CommunityRepository,
+    private readonly authRepository: AuthRepository,
+  ) {}
 
-  async createComu(body: CreateComuDto) {
+  // 게시글 작성 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  //   async createComu(body: CreateComuDto, userId: number) {
+  //     const { title, content } = body;
+  //     if (!title) {
+  //       throw new UnauthorizedException('Title is Must Not Empty');
+  //     }
+  //     if (!content) {
+  //       throw new UnauthorizedException('Content is Must Not Empty');
+  //     }
+
+  //     if(!userId) {
+  //       throw new UnauthorizedException('Not Allowed')
+  //     }
+  //     const createPost = await this.communityRepostoty.createComu({
+  //       title,
+  //       content,
+  //       userId,
+  //     });
+  //     return createPost;
+  //   }
+
+  async createCComu(body: CreateComuDto, userId: number) {
+    const user = await this.authRepository.findUserById(userId)
+
     const { title, content } = body;
-    if (!title) {
-      throw new UnauthorizedException('Title is Must Not Empty');
-    }
-    if (!content) {
-      throw new UnauthorizedException('Content is Must Not Empty');
-    }
 
-    const createPost = await this.communityRepostoty.createComu({
-      title,
-      content,
-    });
-    return createPost;
+    const community = new Community()
   }
 
+  // 게시글 전체 조회 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   async findAllComu() {
     return await this.communityRepostoty.findAllComu();
   }
 
+  // 게시글 상세 보기 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   async findOneComu(id: number) {
     const community = await this.communityRepostoty.findOneComu(id);
-    if (!community) {
-      throw new NotFoundException(`Community with Id ${id} not found.`);
-    }
     return community;
   }
+
+  //   async updateComu(id: number, body: UpdateComuDto, userId: number) {
+  //     return this.communityRepostoty.updateComu(id, body, userId);
+  //   }
 }

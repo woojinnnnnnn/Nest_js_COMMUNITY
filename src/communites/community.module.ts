@@ -11,7 +11,7 @@ import { RefreshTokenStrategy } from 'src/auth/jwt/refreshToken.strategy';
 import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Community, User]), AuthModule],
+  imports: [TypeOrmModule.forFeature([Community, User]), AuthModule, JwtModule],
   controllers: [CommunityController],
   providers: [CommunityService, CommunityRepository, AccessTokenStrategy, RefreshTokenStrategy],
   exports: [CommunityService, CommunityRepository],

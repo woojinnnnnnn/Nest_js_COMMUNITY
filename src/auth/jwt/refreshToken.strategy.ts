@@ -18,9 +18,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-        (request: Request) => {
-          return request?.cookies?.refresh_token;
-        },
+        (request: Request) => request?.cookies?.refresh_token,
       ]),
       ignoreExpiration: true,
       passReqToCallback: true,
@@ -33,9 +31,14 @@ export class RefreshTokenStrategy extends PassportStrategy(
     payload: { sub: string; exp: number; idx: number },
   ) {
     if (!this.authService.compareTokenExpiration(payload.exp)) {
-      return this.authRepository.findUserById(payload.idx);
+      const user = await this.authRepository.findUserById(payload.idx);
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+      req.user = user; 
+      return user; // 리프레시도 마찬가지로 이걸 설정 안해두고 있었음...
     } else {
-      throw new UnauthorizedException('Refresh token has been expired.');
+      throw new UnauthorizedException('Refresh token has expired.');
     }
   }
 }

@@ -4,6 +4,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AuthService } from '../services/auth.service';
 import { AuthRepository } from '../repositories/auth.repository';
+import { Request } from 'express';
 
 @Injectable()
 export class AccessTokenStrategy extends PassportStrategy(
@@ -30,10 +31,14 @@ export class AccessTokenStrategy extends PassportStrategy(
     payload: { sub: string; exp: number; idx: number },
   ) {
     if (!this.authService.compareTokenExpiration(payload.exp)) {
-      //req.user에 값이 저장된다.
-      return this.authRepository.findUserById(payload.idx);
+      const user = await this.authRepository.findUserById(payload.idx);
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+      req.user = user; 
+      return user; // 이걸 설정 안해주고 있었음.. 해골물 드링킹 중 이였다..
     } else {
-      throw new UnauthorizedException('Access token has been expired.');
+      throw new UnauthorizedException('Access token has expired.');
     }
   }
 }
