@@ -2,8 +2,6 @@ import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { LoggerMiddleware } from './logger/logger.middleware';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CommunityController } from './communites/controllers/community.controller';
-import { CommunityService } from './communites/services/community.service';
 import { CommunityModule } from './communites/community.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -14,6 +12,8 @@ import { Community } from './entities/community.entity';
 import { Comment } from './entities/comment.entity';
 import { Like } from './entities/like.entity';
 import { Report } from './entities/report.entity';
+import { CommunityController } from './communites/controllers/community.controller';
+import { CommunityService } from './communites/services/community.service';
 
 @Module({
   imports: [
