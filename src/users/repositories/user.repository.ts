@@ -11,6 +11,7 @@ export class UserRepository {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {}
+
   // 이메일 기준 유저 검색. -------------------------------------------------------------------------
   async findUserByEmail(email: string) {
     try {
@@ -75,11 +76,38 @@ export class UserRepository {
     }
   }
 
+  // 로그아웃.  ----------------------------------------------------------------------------
+  async signOut(id: number) {
+    try {
+      await this.userRepository.update(id, {
+        hashedRefreshToken: null
+      })
+    } catch (error) {
+      throw new HttpException('Server Error', 500);
+    }
+  }
+
   // 리프레쉬 토큰 해시화  --------------------------------------------------------------------
   async hashedRefreshToken(id: number, refreshToken: string) {
     try {
-      const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
-      await this.userRepository.update(id, { hashedRefreshToken });
+      const hashedRefreshToken = await bcrypt.hash(refreshToken, 10)
+
+      await this.userRepository.update(id, {
+        hashedRefreshToken: hashedRefreshToken,
+      })
+    } catch (error) {
+      throw new HttpException('Server Error', 500);
+    }
+  }
+
+  // 리프레쉬 토큰 검증.  --------------------------------------------------------------------
+  async validateRefreshToken(id: number, refreshToken: string) {
+    try {
+      const user = await this.findUserById(id)
+      if(!user || !user.hashedRefreshToken) {
+        return '검증 실패..?'
+      }
+      return await bcrypt.compare(refreshToken, user.hashedRefreshToken)
     } catch (error) {
       throw new HttpException('Server Error', 500);
     }

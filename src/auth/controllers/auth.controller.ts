@@ -7,6 +7,7 @@ import {
   Req,
   Res,
   UseFilters,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { SignUpRequestDto } from 'src/users/dtos/signup.req.dto';
@@ -14,6 +15,7 @@ import { AuthService } from '../services/auth.service';
 import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
 import { HttpExceptionFilter } from 'src/common/exceptions/http-exception.filter';
 import { SignInRequestDto } from '../dtos/signIn.request.dto';
+import { JwtAuthGuard } from '../jwt/jwt.guard';
 
 @Controller('auth')
 @UseInterceptors(SuccessInterceptor)
@@ -35,6 +37,12 @@ export class AuthController {
   }
 
   // 로그아웃. -------------------------------------------------------------------------
+  @UseGuards(JwtAuthGuard)
   @Post('signOut')
-  signOut(@Req() req, @Res() res) {}
+  async signOut(@Req() req, @Res() res) {
+    const user = req.user;
+    await this.authService.signOut(user.id);
+
+    return res.status(200).json({ message: 'SEX' })
+  }
 }

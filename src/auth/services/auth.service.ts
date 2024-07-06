@@ -58,8 +58,15 @@ export class AuthService {
       const payload = { id: user.id, email: user.email };
       const { accessToken, refreshToken } = await this.createToken(payload);
 
+      await this.userRepository.hashedRefreshToken(user.id, refreshToken)
+
       return { accessToken, refreshToken };
     }
+  }
+
+  // 로그아웃 ------------------------------------------------------------------------------------
+  async signOut(id: number) {
+    await this.userRepository.signOut(id)
   }
 
   // 토큰 부여 Ver 1.2 ------------------------------------------------------------------------------------
@@ -80,5 +87,27 @@ export class AuthService {
       accessToken,
       refreshToken,
     };
+  }
+
+  // 리프레쉬 토큰 검중 후 재발급.  -----------------------------------------------------------------------------
+  async refreshTokens(id: number, refreshToken: string) {
+    const user = await this.userRepository.findUserById(id)
+
+    if(!user) {
+      throw new NotFoundException('User Not FOund')
+    }
+
+    const isRefreshTokenValid = await this.userRepository.validateRefreshToken(id, refreshToken)
+
+    if(!isRefreshTokenValid) {
+      throw new UnauthorizedException('Valid Failllll')
+    }
+
+    const payload = { id: user.id, email: user.email } 
+    const tokens = await this.createToken(payload)
+
+    await this.userRepository.hashedRefreshToken(user.id, tokens.refreshToken)
+
+    return tokens
   }
 }

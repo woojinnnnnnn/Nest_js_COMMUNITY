@@ -17,6 +17,7 @@ import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor'
 import { HttpExceptionFilter } from 'src/common/exceptions/http-exception.filter';
 import { UpdateComuDto } from '../dtos/update.post.dto';
 import { ResponseComuDto } from '../dtos/response.post.dto';
+import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 
 @UseInterceptors(SuccessInterceptor)
 @UseFilters(HttpExceptionFilter)
@@ -50,6 +51,7 @@ export class CommunityController {
   }
 
   // 게시글 상세 보기 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  @UseGuards(JwtAuthGuard)
   @Get('/:id')
   async findOneComu(@Param('id') id: number) {
     return await this.communityService.findOneComu(id);
@@ -65,6 +67,7 @@ export class CommunityController {
   //       return updateComu
   //     }
 
+  @UseGuards(JwtAuthGuard)
   @Patch('/:id')
   async updateComu(
     @Param('id') id: number,
@@ -97,6 +100,7 @@ export class CommunityController {
   }
 
   // 게시글 삭제 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  @UseGuards(JwtAuthGuard)
   @Delete()
   async deleteComu(@Param('id') id: number) {}
 }
