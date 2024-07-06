@@ -1,18 +1,19 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CommunityRepository } from '../repositories/community.repository';
-import { AuthRepository } from 'src/auth/repositories/auth.repository';
 import { CreateComuDto } from '../dtos/create.post.dto';
+import { UpdateComuDto } from '../dtos/update.post.dto';
+import { UserRepository } from 'src/users/repositories/user.repository';
 
 @Injectable()
 export class CommunityService {
   constructor(
     private readonly communityRepository: CommunityRepository,
-    private readonly authRepository: AuthRepository,
+    private readonly userRepository: UserRepository,
   ) {}
 
-    // 게시글 작성 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // 게시글 작성 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   async createComu(body: CreateComuDto, userId: number) {
-    const user = await this.authRepository.findUserById(userId);
+    const user = await this.userRepository.findUserById(userId);
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -30,7 +31,16 @@ export class CommunityService {
     return community;
   }
 
-  //     async updateComu(id: number, body: UpdateComuDto, userId: number) {
-  //       return this.communityRepository.updateComu(id, body, userId);
-  //     }
+    // 게시글 수정  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  async updateComu(id: number, body: UpdateComuDto, userId: number) {
+      console.log('CommunityService - updateComu - id:', id);
+      console.log('CommunityService - updateComu - body:', body);
+      console.log('CommunityService - updateComu - userId:', userId);
+    const user = await this.userRepository.findUserById(userId)
+    if(!user) {
+      throw new NotFoundException('User Not Founed?')
+    }
+
+    return this.communityRepository.updateComu(id, body, user)
+  }
 }

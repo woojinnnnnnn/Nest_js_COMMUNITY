@@ -1,14 +1,14 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { AuthController } from './controllers/auth.controller';
 import { AuthService } from './services/auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
-import { AuthRepository } from './repositories/auth.repository';
 import { PassportModule } from '@nestjs/passport';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
-import { AccessTokenStrategy } from './jwt/accessToken.strategy';
-import { RefreshTokenStrategy } from './jwt/refreshToken.strategy';
+import { UserRepository } from 'src/users/repositories/user.repository';
+import { UsersModule } from 'src/users/user.module';
+import { JwtStrtegy } from './jwt/jwt.strategy';
 
 @Module({
   imports: [
@@ -19,9 +19,10 @@ import { RefreshTokenStrategy } from './jwt/refreshToken.strategy';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '1y' },
     }),
+    forwardRef(() => UsersModule),
   ],
   controllers: [AuthController],
-  providers: [AuthService, AuthRepository, AccessTokenStrategy, RefreshTokenStrategy],
-  exports: [AuthService, AuthRepository]
+  providers: [AuthService, JwtService, JwtStrtegy],
+  exports: [AuthService],
 })
 export class AuthModule {}

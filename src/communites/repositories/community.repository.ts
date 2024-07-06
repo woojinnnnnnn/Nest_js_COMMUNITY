@@ -1,9 +1,15 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  HttpException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Community } from 'src/entities/community.entity';
 import { User } from 'src/entities/user.entity';
 import { CreateComuDto } from '../dtos/create.post.dto';
+import { UpdateComuDto } from '../dtos/update.post.dto';
 
 @Injectable()
 export class CommunityRepository {
@@ -26,10 +32,25 @@ export class CommunityRepository {
   // 게시글 전체 조회 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   async findAllComu() {
     try {
-      return await this.communityRepository.find({
-        select: ['id', 'title', 'veiwCount', 'createdAt', 'updatedAt'],
+      const communities = await this.communityRepository.find({
+        select: {
+          id: true,
+          title: true,
+          veiwCount: true,
+          createdAt: true,
+          updatedAt: true,
+          user: {
+            id: true,
+            email: true,
+            nickName: true,
+          }
+        },
+        relations: ['user'],
       });
+
+      return communities;
     } catch (error) {
+      console.log(error);
       throw new HttpException('Server Error', 500);
     }
   }
@@ -53,29 +74,66 @@ export class CommunityRepository {
     }
   }
 
-  //     async updateComu(id: any, userId: any, body: UpdateComuDto) {
+  //   async updateComu(id: number, body: UpdateComuDto, user: User): Promise<Community> {
   //       try {
   //         const community = await this.communityRepository.findOne({
   //           where: { id },
-  //           relations: ['user']
+  //           relations: ['user'],
   //         });
 
   //         if (!community) {
-  //           throw new NotFoundException(`Community with id ${id} not Found`);
+  //           throw new NotFoundException(`Community with id ${id} not found`);
   //         }
-  //         if (!community.user || community.user.id !== userId) {
-  //           throw new HttpException('Not Allowd', 401);
+
+  //         if (community.user.id !== user.id) {
+  //           throw new ForbiddenException(
+  //             'You do not have permission to edit this post',
+  //           );
   //         }
 
   //         community.title = body.title;
   //         community.content = body.content;
 
   //         await this.communityRepository.save(community);
-
   //         return community;
   //       } catch (error) {
-  //         console.error('Error in updateComu:', error); // 로그 추가
   //         throw new HttpException('Server Error', 500);
   //       }
   //     }
+
+  async updateComu(id: number, body: UpdateComuDto, user: User) {
+    try {
+      console.log('updateComu - id:', id);
+      console.log('updateComu - body:', body);
+      console.log('updateComu - user:', user);
+      const community = await this.communityRepository.findOne({
+        where: { id },
+        relations: ['user'],
+      });
+
+      if (!community) {
+        console.error(`updateComu - Community with id ${id} not found`);
+        throw new NotFoundException(`Community with id ${id} not found`);
+      }
+
+      if (community.user.id !== user.id) {
+        console.error(
+          `updateComu - User with id ${user.id} does not have permission to edit community with id ${id}`,
+        );
+        throw new ForbiddenException(
+          'You do not have permission to edit this post',
+        );
+      }
+
+      community.title = body.title;
+      community.content = body.content;
+
+      await this.communityRepository.save(community);
+      console.log('updateComu - updated community:', community);
+      return community;
+    } catch (error) {
+      console.error('updateComu - error:', error);
+      throw new HttpException('Server Error', 500);
+    }
+  }
 }
