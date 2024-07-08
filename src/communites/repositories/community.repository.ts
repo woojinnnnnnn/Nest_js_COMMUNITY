@@ -33,6 +33,9 @@ export class CommunityRepository {
   async findAllComu() {
     try {
       const communities = await this.communityRepository.find({
+        where: {
+          deletedAt: null,
+        },
         select: {
           id: true,
           title: true,
@@ -43,7 +46,7 @@ export class CommunityRepository {
             id: true,
             email: true,
             nickName: true,
-          }
+          },
         },
         relations: ['user'],
       });
@@ -59,7 +62,7 @@ export class CommunityRepository {
   async findOneComu(id: number) {
     try {
       const community = await this.communityRepository.findOne({
-        where: { id },
+        where: { id, deletedAt: null },
       });
       // 레포 로직에서 veiw 카운트 올리긴 하는데 .. 이건 서비스 로직으로 옮기는게 나을지.. ?
       if (!community) {
@@ -74,66 +77,54 @@ export class CommunityRepository {
     }
   }
 
-  //   async updateComu(id: number, body: UpdateComuDto, user: User): Promise<Community> {
-  //       try {
-  //         const community = await this.communityRepository.findOne({
-  //           where: { id },
-  //           relations: ['user'],
-  //         });
-
-  //         if (!community) {
-  //           throw new NotFoundException(`Community with id ${id} not found`);
-  //         }
-
-  //         if (community.user.id !== user.id) {
-  //           throw new ForbiddenException(
-  //             'You do not have permission to edit this post',
-  //           );
-  //         }
-
-  //         community.title = body.title;
-  //         community.content = body.content;
-
-  //         await this.communityRepository.save(community);
-  //         return community;
-  //       } catch (error) {
-  //         throw new HttpException('Server Error', 500);
-  //       }
-  //     }
-
+  // 게시글 수정 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   async updateComu(id: number, body: UpdateComuDto, user: User) {
     try {
-      console.log('updateComu - id:', id);
-      console.log('updateComu - body:', body);
-      console.log('updateComu - user:', user);
       const community = await this.communityRepository.findOne({
         where: { id },
         relations: ['user'],
       });
 
       if (!community) {
-        console.error(`updateComu - Community with id ${id} not found`);
         throw new NotFoundException(`Community with id ${id} not found`);
       }
 
       if (community.user.id !== user.id) {
-        console.error(
-          `updateComu - User with id ${user.id} does not have permission to edit community with id ${id}`,
-        );
         throw new ForbiddenException(
-          'You do not have permission to edit this post',
+          'You Do NNot Have PPermission To Edit This PPPPost',
         );
       }
-
       community.title = body.title;
       community.content = body.content;
 
       await this.communityRepository.save(community);
-      console.log('updateComu - updated community:', community);
       return community;
     } catch (error) {
-      console.error('updateComu - error:', error);
       throw new HttpException('Server Error', 500);
     }
+  }
+
+  async deleteComu(id: number, user: User) {
+    try {
+      const community = await this.communityRepository.findOne({
+        where: { id },
+        relations: ['user'],
+      });
+      if (!community) {
+        throw new NotFoundException(`Community with id ${id} not found`);
+      }
+      if (community.user.id !== user.id) {
+        throw new ForbiddenException(
+          'You Do NNot Have PPermission To Edit This PPPPost',
+        );
+      }
+      if (community.deletedAt !== null) {
+        throw new HttpException('Already Gone.', 200);
+      }
+
+      await this.communityRepository.softDelete(id);
+
+      return community
+    } catch (error) {}
   }
 }

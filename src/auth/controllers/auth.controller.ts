@@ -40,9 +40,15 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('signOut')
   async signOut(@Req() req, @Res() res) {
-    const user = req.user;
-    await this.authService.signOut(user.id);
+    try {
+      const user = req.user;
+      await this.authService.signOut(user.id);
 
-    return res.status(200).json({ message: 'SEX' })
+      // 여기 저기 뒤져 보니까 아래 예전에 하던 방식으로 리스폰스 가능 하단걸 깨닮..
+      // 이러면 근데 인터셉터에도 안걸리네
+      return res.status(200).json({ message: 'Succcccceeesss SignOUT' });
+    } catch (error) {
+      throw new HttpException('SERVER ERROR', 500);
+    }
   }
 }
