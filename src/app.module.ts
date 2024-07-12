@@ -14,6 +14,7 @@ import { Like } from './entities/like.entity';
 import { Report } from './entities/report.entity';
 import { CommunityController } from './communites/controllers/community.controller';
 import { CommunityService } from './communites/services/community.service';
+import { CommentModule } from './comments/comment.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { CommunityService } from './communites/services/community.service';
     CommunityModule,
     UsersModule,
     AuthModule,
+    CommentModule,
   ],
   controllers: [AppController, CommunityController],
   providers: [AppService, CommunityService],

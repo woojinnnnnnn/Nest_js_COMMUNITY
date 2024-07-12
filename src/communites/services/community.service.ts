@@ -69,6 +69,8 @@ export class CommunityService {
       throw new HttpException('Server Error', 500);
     }
   }
+
+  // 게시글 삭제 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   async deleteComu(id: number, userId: number) {
     try {
       const user = await this.userRepository.findUserById(userId);

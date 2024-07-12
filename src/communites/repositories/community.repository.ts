@@ -18,13 +18,15 @@ export class CommunityRepository {
     private readonly communityRepository: Repository<Community>,
   ) {}
 
+  // 생각 해보니 좀 많이 바보 처럼 하고 있었네.. 서비스 로직에서 가공 해야 하는데 여기서 가공을 더 많이 했네
+
   // 게시글 작성 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  async createComu(body: CreateComuDto, user: User): Promise<Community> {
+  async createComu(body: CreateComuDto, user: User) {
     const { title, content } = body;
     const community = this.communityRepository.create({
       title,
       content,
-      user,
+      user, // 이런식으로 반환 하니까 정보가 다 나오는구나.. 씁..
     });
     return await this.communityRepository.save(community);
   }
