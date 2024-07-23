@@ -19,20 +19,18 @@ export class CommentRepositoty {
   }
 
   async findCommentByCommunityId(communityId: number) {
-    return this.commentRepository.find({
-      where: {
-        deletedAt: null,
-        community: { id: communityId },
-      },
-      select: {
-        user: {
-          id: true,
-          email: true,
-          nickName: true,
-          role: true,
+      return this.commentRepository.find({
+        where: {
+          deletedAt: null,
+          community: { id: communityId },
         },
-      },
-      relations: ['user'],
-    });
+        select: {
+          id: true,
+          content: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+        relations: ['user'],
+      });
   }
 }

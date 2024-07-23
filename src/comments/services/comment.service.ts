@@ -14,17 +14,22 @@ export class CommentService {
             private readonly communityRepository: CommunityRepository
       ) {}
 
-      async createComment(id: number, body: CreateCommentDto, user: User) {
-            const community = await this.communityRepository.findOneComu(id)
+      async createComment(id: number, body: CreateCommentDto, userId: number) {
+            const community = await this.communityRepository.findOneComuId(id)
 
             if(!community) {
                   throw new NotFoundException(`Community with id ${id} not found`)
             }
 
+            const user = await this.userRepository.findUserById(userId);
+            if (!user) {
+              throw new NotFoundException(`User with id ${userId} not found`);
+            }
+
             const newComment = new Comment()
+            newComment.community = community
             newComment.content = body.content;
             newComment.user = user;
-            newComment.community = community
 
             return this.commentRepository.createComment(newComment)
       }

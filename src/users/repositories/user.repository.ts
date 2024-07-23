@@ -54,11 +54,7 @@ export class UserRepository {
           'email',
           'nickName',
           'role',
-          'password',
-          'hashedRefreshToken',
           'createdAt',
-          'updatedAt',
-          'deletedAt',
         ],
       });
       return user;

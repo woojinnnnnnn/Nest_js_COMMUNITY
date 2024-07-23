@@ -106,6 +106,7 @@ export class CommunityRepository {
     }
   }
 
+  // 게시글 삭제 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   async deleteComu(id: number, user: User) {
     try {
       const community = await this.communityRepository.findOne({
@@ -126,7 +127,15 @@ export class CommunityRepository {
 
       await this.communityRepository.softDelete(id);
 
-      return community
-    } catch (error) {}
+      return community;
+    } catch (error) {
+      throw new HttpException('Server Error', 500);
+    }
+  }
+
+  async findOneComuId(id: number) {
+    return await this.communityRepository.findOne({
+      where: { id },
+    });
   }
 }
