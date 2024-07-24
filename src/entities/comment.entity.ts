@@ -34,11 +34,11 @@ export class Comment {
 
   @OneToMany(() => Comment, (childComment) => childComment.parentComment)
   @JoinColumn()
-  childComments: Comment[];
+  childComments: Comment[]; // replies
 
   @ManyToOne(() => Comment, (parentComment) => parentComment.childComments)
   @JoinColumn()
-  parentComment: Comment;
+  parentComment: Comment; // 나중에 replyTo 로 변경.
 
   @ManyToOne(() => User, (user) => user.comment, {
     onDelete: 'SET NULL',

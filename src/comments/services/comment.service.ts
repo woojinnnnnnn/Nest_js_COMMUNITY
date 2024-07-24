@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { CommentRepositoty } from '../repositories/comment.repository';
 import { CreateCommentDto } from '../dtos/create.comment.dto';
 import { UserRepository } from 'src/users/repositories/user.repository';
@@ -51,5 +51,27 @@ export class CommentService {
   // 커뮤니티 id 를 통한 댓글 조회 - - - - - - - - - - - - - - - - - - - - - - - - - - -
   async getCommentByCommunityId(id: number) {
     return this.commentRepository.findCommentByCommunityId(id);
+  }
+
+  async deleteComment(id: number, userId: number) {
+    try {
+      const user = await this.userRepository.findUserById(userId);
+      if (!user) {
+        throw new NotFoundException('USererjsdfb');
+      }
+      const deleteComment = await this.commentRepository.deleteComment(
+        id,
+        user,
+      );
+      return {
+            id: deleteComment.id,
+            content: deleteComment.content,
+            userId: deleteComment.user.id,
+            email: deleteComment.user.email,
+            nickName: deleteComment.user.nickName
+      }
+    } catch (error) {
+      throw new HttpException('Server error', 500);
+    }
   }
 }
