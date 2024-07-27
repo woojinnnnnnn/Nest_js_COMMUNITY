@@ -16,6 +16,7 @@ import { CommunityController } from './communites/controllers/community.controll
 import { CommunityService } from './communites/services/community.service';
 import { CommentModule } from './comments/comment.module';
 import { LikesModule } from './likes/likes.module';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { LikesModule } from './likes/likes.module';
     AuthModule,
     CommentModule,
     LikesModule,
+    ReportsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

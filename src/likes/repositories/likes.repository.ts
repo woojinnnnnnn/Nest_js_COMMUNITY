@@ -11,6 +11,7 @@ export class LikeRepository {
     private readonly likeRepository: Repository<Like>,
   ) {}
 
+  // 좋아요 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   async addLike(communityId: number, userId: number) {
     try {
       const like = this.likeRepository.create({
@@ -28,6 +29,7 @@ export class LikeRepository {
   > id <- 값이 커뮤니티 아이디 값이 되어 버려 새롭게 수정중.
    */
 
+  // communityId && userId 값 조회 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   async findLikeByCommunityAndUser(communityId: number, userId: number) {
     try {
       return await this.likeRepository.findOne({
@@ -41,6 +43,7 @@ export class LikeRepository {
     }
   }
 
+  // 좋아요 취소 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   async deleteLike(id: number) {
     try {
       await this.likeRepository.delete(id);

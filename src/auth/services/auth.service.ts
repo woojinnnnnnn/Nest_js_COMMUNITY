@@ -61,7 +61,7 @@ export class AuthService {
       }
       const isPasswordValidated = await bcrypt.compare(password, user.password);
       if (isPasswordValidated) {
-        const payload = { id: user.id, email: user.email };
+        const payload = { id: user.id, email: user.email, role: user.role };
         const { accessToken, refreshToken } = await this.createToken(payload);
 
         await this.userRepository.hashedRefreshToken(user.id, refreshToken);
@@ -79,8 +79,8 @@ export class AuthService {
   }
 
   // 토큰 부여 Ver 1.2 ------------------------------------------------------------------------------------
-  async createToken({ id, email }: Payload) {
-    const payload: Payload = { id, email };
+  async createToken({ id, email, role }: Payload) {
+    const payload: Payload = { id, email, role };
     const secret = this.configService.get<string>('JWT_SECRET');
 
     const accessToken = this.jwtService.sign(payload, {
@@ -115,7 +115,7 @@ export class AuthService {
       throw new UnauthorizedException('Valid Failllll');
     }
 
-    const payload = { id: user.id, email: user.email };
+    const payload = { id: user.id, email: user.email, role: user.role};
     const tokens = await this.createToken(payload);
 
     await this.userRepository.hashedRefreshToken(user.id, tokens.refreshToken);

@@ -11,6 +11,7 @@ export class LikesService {
     private readonly communityRepository: CommunityRepository,
   ) {}
 
+  // 좋아요 && 취소 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   async addLike(communityId: number, userId: number) {
       try {
         const community = await this.communityRepository.findOneComuId(communityId);

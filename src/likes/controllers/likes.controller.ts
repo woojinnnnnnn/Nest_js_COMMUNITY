@@ -19,6 +19,7 @@ import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 export class LikesController {
   constructor(private readonly likeService: LikesService) {}
 
+  // 좋아요 && 취소 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   @UseGuards(JwtAuthGuard)
   @Post()
   async addLike(@Param('communityId') communityId: number, @Req() req) {
@@ -32,3 +33,5 @@ export class LikesController {
 }
 
 // 임시 라이크 기능 아직 테스트 안해봄
+// 1차 시도 -> Like 의 고유 ID 값에 communityId 값이 들어가버림.. 
+// 2차 시도 -> 성공적으로 고유 Id 값 생성, -> 같은 요청시 좋아요 삭제 완료.
