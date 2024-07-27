@@ -1,4 +1,5 @@
 import {
+  HttpException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -21,52 +22,60 @@ export class AuthService {
 
   // 회원 가입 ------------------------------------------------------------------------------------
   async signUp(body: SignUpRequestDto) {
-    const { email, nickName, password } = body;
-    const isExistUser = await this.userRepository.findUserByEmail(email);
+    try {
+      const { email, nickName, password } = body;
+      const isExistUser = await this.userRepository.findUserByEmail(email);
 
-    if (isExistUser) {
-      throw new UnauthorizedException(`${email} is Already Exists..`);
+      if (isExistUser) {
+        throw new UnauthorizedException(`${email} is Already Exists..`);
+      }
+      const isExistNickName =
+        await this.userRepository.findUserByNickName(nickName);
+
+      if (isExistNickName) {
+        throw new UnauthorizedException(`${nickName} is Already Exists`);
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      const user = await this.userRepository.createUser({
+        email,
+        nickName,
+        password: hashedPassword,
+      });
+      return user.readOnlyData;
+    } catch (error) {
+      throw new HttpException('Server Error', 500);
     }
-    const isExistNickName =
-      await this.userRepository.findUserByNickName(nickName);
-
-    if (isExistNickName) {
-      throw new UnauthorizedException(`${nickName} is Already Exists`);
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const user = await this.userRepository.createUser({
-      email,
-      nickName,
-      password: hashedPassword,
-    });
-    return user.readOnlyData;
   }
 
   // 로그인 ------------------------------------------------------------------------------------
   async signIn(body: SignInRequestDto) {
-    const { email, password } = body;
+    try {
+      const { email, password } = body;
 
-    const user = await this.userRepository.findUserByEmail(email);
+      const user = await this.userRepository.findUserByEmail(email);
 
-    if (!user) {
-      throw new NotFoundException(`Not Exist ${user}`);
-    }
-    const isPasswordValidated = await bcrypt.compare(password, user.password);
-    if (isPasswordValidated) {
-      const payload = { id: user.id, email: user.email };
-      const { accessToken, refreshToken } = await this.createToken(payload);
+      if (!user) {
+        throw new NotFoundException(`Not Exist ${user}`);
+      }
+      const isPasswordValidated = await bcrypt.compare(password, user.password);
+      if (isPasswordValidated) {
+        const payload = { id: user.id, email: user.email };
+        const { accessToken, refreshToken } = await this.createToken(payload);
 
-      await this.userRepository.hashedRefreshToken(user.id, refreshToken)
+        await this.userRepository.hashedRefreshToken(user.id, refreshToken);
 
-      return { accessToken, refreshToken };
+        return { accessToken, refreshToken };
+      }
+    } catch (error) {
+      throw new HttpException('Server Error', 500);
     }
   }
 
   // 로그아웃 ------------------------------------------------------------------------------------
   async signOut(id: number) {
-    await this.userRepository.signOut(id)
+    await this.userRepository.signOut(id);
   }
 
   // 토큰 부여 Ver 1.2 ------------------------------------------------------------------------------------
@@ -91,23 +100,26 @@ export class AuthService {
 
   // 리프레쉬 토큰 검중 후 재발급.  -----------------------------------------------------------------------------
   async refreshTokens(id: number, refreshToken: string) {
-    const user = await this.userRepository.findUserById(id)
+    const user = await this.userRepository.findUserById(id);
 
-    if(!user) {
-      throw new NotFoundException('User Not FOund')
+    if (!user) {
+      throw new NotFoundException('User Not FOund');
     }
 
-    const isRefreshTokenValid = await this.userRepository.validateRefreshToken(id, refreshToken)
+    const isRefreshTokenValid = await this.userRepository.validateRefreshToken(
+      id,
+      refreshToken,
+    );
 
-    if(!isRefreshTokenValid) {
-      throw new UnauthorizedException('Valid Failllll')
+    if (!isRefreshTokenValid) {
+      throw new UnauthorizedException('Valid Failllll');
     }
 
-    const payload = { id: user.id, email: user.email } 
-    const tokens = await this.createToken(payload)
+    const payload = { id: user.id, email: user.email };
+    const tokens = await this.createToken(payload);
 
-    await this.userRepository.hashedRefreshToken(user.id, tokens.refreshToken)
+    await this.userRepository.hashedRefreshToken(user.id, tokens.refreshToken);
 
-    return tokens
+    return tokens;
   }
 }

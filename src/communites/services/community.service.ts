@@ -13,32 +13,44 @@ export class CommunityService {
 
   // 게시글 작성 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   async createComu(body: CreateComuDto, userId: number) {
-    const user = await this.userRepository.findUserById(userId);
-    if (!user) {
-      throw new NotFoundException('User not found');
+    try {
+      const user = await this.userRepository.findUserById(userId);
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      const createComu = await this.communityRepository.createComu(body, user);
+      // 리스폰스 디티오 별도 관리 인원
+      return {
+        id: createComu.id,
+        title: createComu.title,
+        content: createComu.content,
+        createdAt: createComu.createdAt,
+        userId: createComu.user.id,
+        email: createComu.user.email,
+        nickName: createComu.user.nickName,
+      };
+    } catch (error) {
+      throw new HttpException('Server Error', 500);
     }
-    const createComu = await this.communityRepository.createComu(body, user);
-    // 리스폰스 디티오 별도 관리 인원
-    return {
-      id: createComu.id,
-      title: createComu.title,
-      content: createComu.content,
-      createdAt: createComu.createdAt,
-      userId: createComu.user.id,
-      email: createComu.user.email,
-      nickName: createComu.user.nickName,
-    };
   }
 
   // 게시글 전체 조회 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   async findAllComu() {
-    return await this.communityRepository.findAllComu();
+    try {
+      return await this.communityRepository.findAllComu();
+    } catch (error) {
+      throw new HttpException('Server Error', 500);
+    }
   }
 
   // 게시글 상세 보기 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   async findOneComu(id: number) {
-    const community = await this.communityRepository.findOneComu(id);
-    return community;
+    try {
+      const community = await this.communityRepository.findOneComu(id);
+      return community;
+    } catch (error) {
+      throw new HttpException('Server Error', 500);
+    }
   }
 
   // 게시글 수정  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

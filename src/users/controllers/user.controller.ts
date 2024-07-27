@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpException,
   Post,
   Req,
   UnauthorizedException,
@@ -23,9 +24,13 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Get('info')
   getUserInfo(@Req() req) {
-    const user = req.user;
-    const { id, email } = user;
-    return { id, email };
+    try {
+      const user = req.user;
+      const { id, email } = user;
+      return { id, email };
+    } catch (error) {
+      throw new HttpException('Server Errror', 500);
+    }
   }
 
   // 이미지 업로드 예정 ?? -------------------------------------------------------------------------

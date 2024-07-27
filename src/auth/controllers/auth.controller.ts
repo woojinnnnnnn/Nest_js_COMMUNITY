@@ -26,14 +26,22 @@ export class AuthController {
   // 회원 가입. -------------------------------------------------------------------------
   @Post('signUp')
   async signUp(@Body() body: SignUpRequestDto) {
-    const user = this.authService.signUp(body);
-    return user;
+    try {
+      const user = this.authService.signUp(body);
+      return user;
+    } catch (error) {
+      throw new HttpException('ServerError', 500);
+    }
   }
 
   // 로그인. -------------------------------------------------------------------------
   @Post('signIn')
   signIn(@Body() body: SignInRequestDto) {
-    return this.authService.signIn(body);
+    try {
+      return this.authService.signIn(body);
+    } catch (error) {
+      throw new HttpException('SErverERROR', 500);
+    }
   }
 
   // 로그아웃. -------------------------------------------------------------------------

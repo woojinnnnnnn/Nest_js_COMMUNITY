@@ -15,6 +15,7 @@ import { Report } from './entities/report.entity';
 import { CommunityController } from './communites/controllers/community.controller';
 import { CommunityService } from './communites/services/community.service';
 import { CommentModule } from './comments/comment.module';
+import { LikesModule } from './likes/likes.module';
 
 @Module({
   imports: [
@@ -32,14 +33,14 @@ import { CommentModule } from './comments/comment.module';
       keepConnectionAlive: true,
       charset: 'utf8mb4',
     }),
-
     CommunityModule,
     UsersModule,
     AuthModule,
     CommentModule,
+    LikesModule,
   ],
-  controllers: [AppController, CommunityController],
-  providers: [AppService, CommunityService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

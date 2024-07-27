@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
   Param,
   Patch,
   Post,
@@ -31,21 +32,33 @@ export class CommentController {
     @Body() body: CreateCommentDto,
     @Req() req,
   ) {
-    const userId = req.user.id;
-    return this.commentService.createComment(communityId, body, userId);
+    try {
+      const userId = req.user.id;
+      return this.commentService.createComment(communityId, body, userId);
+    } catch (error) {
+      throw new HttpException('Server Error', 500);
+    }
   }
 
   // 커뮤니티 아이디 조회 를 통한 댓글 조회 - - - - - - - - - - - - - - - - - - - - - - - -
   @Get()
   async getCommentsByCommunityId(@Param('communityId') communityId: number) {
-    return this.commentService.getCommentByCommunityId(communityId);
+    try {
+      return this.commentService.getCommentByCommunityId(communityId);
+    } catch (error) {
+      throw new HttpException('Server Error', 500);
+    }
   }
 
   // 댓글 삭제 - - - - - - - - - - - - - - - - - - - - - - - -
   @UseGuards(JwtAuthGuard)
   @Delete('/:id')
   async deleteComment(@Param('id') id: number, @Req() req) {
-    const userId = req.user.id;
-    return await this.commentService.deleteComment(id, userId);
+    try {
+      const userId = req.user.id;
+      return await this.commentService.deleteComment(id, userId);
+    } catch (error) {
+      throw new HttpException('Server Error', 500);
+    }
   }
 }

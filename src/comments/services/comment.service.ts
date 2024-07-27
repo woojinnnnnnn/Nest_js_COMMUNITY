@@ -16,43 +16,52 @@ export class CommentService {
 
   // 댓글 및 대댓글 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   async createComment(id: number, body: CreateCommentDto, userId: number) {
-    const community = await this.communityRepository.findOneComuId(id);
+    try {
+      const community = await this.communityRepository.findOneComuId(id);
 
-    if (!community) {
-      throw new NotFoundException(`Community with id ${id} not found`);
-    }
-
-    const user = await this.userRepository.findUserById(userId);
-    if (!user) {
-      throw new NotFoundException(`User with id ${userId} not found`);
-    }
-
-    const newComment = new Comment();
-    newComment.community = community;
-    newComment.content = body.content;
-    newComment.user = user;
-
-    // 여기서 부모 댓글.
-    if (body.parentCommentId) {
-      const parentComment = await this.commentRepository.findOne(
-        body.parentCommentId,
-      );
-      if (!parentComment) {
-        throw new NotFoundException(
-          `Parent comment with id ${body.parentCommentId} not found`,
-        );
+      if (!community) {
+        throw new NotFoundException(`Community with id ${id} not found`);
       }
-      newComment.parentComment = parentComment;
-    }
 
-    return this.commentRepository.createComment(newComment);
+      const user = await this.userRepository.findUserById(userId);
+      if (!user) {
+        throw new NotFoundException(`User with id ${userId} not found`);
+      }
+
+      const newComment = new Comment();
+      newComment.community = community;
+      newComment.content = body.content;
+      newComment.user = user;
+
+      // 여기서 부모 댓글.
+      if (body.parentCommentId) {
+        const parentComment = await this.commentRepository.findOne(
+          body.parentCommentId,
+        );
+        if (!parentComment) {
+          throw new NotFoundException(
+            `Parent comment with id ${body.parentCommentId} not found`,
+          );
+        }
+        newComment.parentComment = parentComment;
+      }
+
+      return this.commentRepository.createComment(newComment);
+    } catch (error) {
+      throw new HttpException('Server Error', 500);
+    }
   }
 
   // 커뮤니티 id 를 통한 댓글 조회 - - - - - - - - - - - - - - - - - - - - - - - - - - -
   async getCommentByCommunityId(id: number) {
-    return this.commentRepository.findCommentByCommunityId(id);
+    try {
+      return this.commentRepository.findCommentByCommunityId(id);
+    } catch (error) {
+      throw new HttpException('Server Error', 500);
+    }
   }
 
+  // 댓글 삭제 - - - - - - - - - - - - - - - - - - - - - - - - - - -
   async deleteComment(id: number, userId: number) {
     try {
       const user = await this.userRepository.findUserById(userId);
@@ -64,12 +73,12 @@ export class CommentService {
         user,
       );
       return {
-            id: deleteComment.id,
-            content: deleteComment.content,
-            userId: deleteComment.user.id,
-            email: deleteComment.user.email,
-            nickName: deleteComment.user.nickName
-      }
+        id: deleteComment.id,
+        content: deleteComment.content,
+        userId: deleteComment.user.id,
+        email: deleteComment.user.email,
+        nickName: deleteComment.user.nickName,
+      };
     } catch (error) {
       throw new HttpException('Server error', 500);
     }

@@ -19,33 +19,46 @@ export class CommentRepositoty {
 
   // 댓글 작성 - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   async createComment(body: CreateCommentDto) {
-    return this.commentRepository.save(body);
+    try {
+      return this.commentRepository.save(body);
+    } catch (error) {
+      throw new HttpException('Server Error', 500);
+    }
   }
 
   // 코멘트 찾기 - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   async findCommentByCommunityId(communityId: number) {
-    return this.commentRepository.find({
-      where: {
-        deletedAt: null,
-        community: { id: communityId },
-      },
-      relations: ['user', 'parentComment', 'childComments'],
-    });
+    try {
+      return this.commentRepository.find({
+        where: {
+          deletedAt: null,
+          community: { id: communityId },
+        },
+        relations: ['user', 'parentComment', 'childComments'],
+      });
+    } catch (error) {
+      throw new HttpException('Server Error', 500);
+    }
   }
 
   // 댓글 Id 로 단일 댓글 조회... ? - - - - - - - - - - - - - - - - - - - -
   async findOne(id: number) {
-    return this.commentRepository.findOne({
-      where: { id },
-      relations: ['user', 'parentComment', 'childComments'],
-    });
+    try {
+      return this.commentRepository.findOne({
+        where: { id },
+        relations: ['user', 'parentComment', 'childComments'],
+      });
+    } catch (error) {
+      throw new HttpException('Server Error', 500);
+    }
   }
 
+    // 댓글 삭제 - - - - - - - - - - - - - - - - - - - -
   async deleteComment(id: number, user: User) {
     try {
       const comment = await this.commentRepository.findOne({
         where: { id },
-         relations: ['user'],
+        relations: ['user'],
       });
       if (!comment) {
         throw new NotFoundException('못찾았데');
