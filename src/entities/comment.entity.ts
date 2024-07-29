@@ -11,6 +11,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from './user.entity';
+import { Report } from './report.entity';
 import { Community } from './community.entity';
 
 @Entity('COMMENT')
@@ -31,6 +32,9 @@ export class Comment {
 
   @DeleteDateColumn({ type: 'timestamp' })
   deletedAt: Date;
+
+  @OneToMany(() => Report, (report) => report.comment)
+  report: Report[]
 
   @OneToMany(() => Comment, (childComment) => childComment.parentComment)
   @JoinColumn()

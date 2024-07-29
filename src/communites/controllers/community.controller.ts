@@ -29,7 +29,7 @@ export class CommunityController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async createCComu(@Body() body: CreateComuDto, @Req() req) {
+  async createComu(@Body() body: CreateComuDto, @Req() req) {
     const userId = req.user.id;
     return await this.communityService.createComu(body, userId);
   }

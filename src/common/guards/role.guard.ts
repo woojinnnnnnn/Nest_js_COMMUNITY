@@ -12,7 +12,7 @@ export class RolesGuard implements CanActivate {
   ): boolean | Promise<boolean> | Observable<boolean> {
     const roles = this.reflector.get<UserStatus[]>('role', context.getHandler());
 
-    if (!roles) { // roles가 없으면 true를 리턴하고 진행한다.
+    if (!roles) { 
       return true;
     }
 

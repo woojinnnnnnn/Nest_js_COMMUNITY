@@ -10,6 +10,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from './user.entity';
+import { Report } from './report.entity';
 import { Comment } from './comment.entity';
 import { IsNotEmpty, IsString } from 'class-validator';
 import { Like } from './like.entity';
@@ -44,6 +45,12 @@ export class Community {
   @OneToMany(() => Comment, (comment) => comment.community)
   comment: Comment[];
 
+  @OneToMany(() => Report, (report) => report.community)
+  report: Report[]
+
+  @OneToMany(() => Like, (like) => like.community)
+  like: Like[]
+
   @ManyToOne(() => User, (user) => user.community, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
@@ -51,7 +58,5 @@ export class Community {
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   user: User;
 
-  @OneToMany(() => Like, (like) => like.community)
-  like: Like;
-      community: { id: number; };
+
 }

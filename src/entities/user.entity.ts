@@ -11,6 +11,7 @@ import { Community } from './community.entity';
 import { Comment } from './comment.entity';
 import { Like } from './like.entity';
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { Report } from './report.entity';
 
 export enum UserStatus {
   ADMIN = 'ADMIN',
@@ -60,6 +61,9 @@ export class User {
 
   @OneToMany(() => Like, (like) => like.user)
   like: Like[];
+
+  @OneToMany(() => Report, (report) => report.user)
+  report: Report[];
 
   readonly readOnlyData: {
     email: string;

@@ -26,7 +26,7 @@ export class CommentRepositoty {
     }
   }
 
-  // 코멘트 찾기 - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // 코멘트 찾기 전체 조회 - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   async findCommentByCommunityId(communityId: number) {
     try {
       return this.commentRepository.find({
@@ -41,7 +41,7 @@ export class CommentRepositoty {
     }
   }
 
-  // 댓글 Id 로 단일 댓글 조회... ? - - - - - - - - - - - - - - - - - - - -
+  // 댓글 Id 로 단일 조회 - - - - - - - - - - - - - - - - - - - -
   async findOne(id: number) {
     try {
       return this.commentRepository.findOne({

@@ -11,6 +11,8 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { JwtStrtegy } from 'src/auth/jwt/jwt.strategy';
 import { Community } from 'src/entities/community.entity';
 import { CommunityModule } from 'src/communites/community.module';
+import { UserRepository } from 'src/users/repositories/user.repository';
+import { CommunityRepository } from 'src/communites/repositories/community.repository';
 
 @Module({
   imports: [
@@ -21,6 +23,7 @@ import { CommunityModule } from 'src/communites/community.module';
     JwtModule,
   ],
   controllers: [CommentController],
-  providers: [CommentService, CommentRepositoty, JwtStrtegy, JwtService],
+  providers: [CommentService, CommentRepositoty, UserRepository, CommunityRepository, JwtStrtegy, JwtService],
+  exports: [CommentRepositoty]
 })
 export class CommentModule {}

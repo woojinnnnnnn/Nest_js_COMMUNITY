@@ -52,7 +52,7 @@ export class CommentService {
     }
   }
 
-  // 커뮤니티 id 를 통한 댓글 조회 - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // 커뮤니티 id 를 통한 댓글 조회 (전체 조회)- - - - - - - - - - - - - - - - - - - - - - - - - - -
   async getCommentByCommunityId(id: number) {
     try {
       return this.commentRepository.findCommentByCommunityId(id);
