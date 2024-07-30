@@ -19,7 +19,7 @@ export class ReportsService {
     private readonly commentRepository: CommentRepositoty,
   ) {}
 
-  async findAllReport(): Promise<ReportDTO[]> {
+  async findAllReport(): Promise<ReportDTO[]> { // 여러 블로그를 뒤져 봤을때 이렇게 프로미스 하던데 솔직히 이해는 하고 쓰는 느낌은 아님.
     try {
       const reports = await this.reportRepository.findAllReport()
       return reports.map(report => {

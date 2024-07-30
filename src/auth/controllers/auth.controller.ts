@@ -10,7 +10,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { SignUpRequestDto } from 'src/users/dtos/signup.req.dto';
+import { SignUpRequestDto } from 'src/users/dtos/signup.request.dto';
 import { AuthService } from '../services/auth.service';
 import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
 import { HttpExceptionFilter } from 'src/common/exceptions/http-exception.filter';
@@ -36,7 +36,7 @@ export class AuthController {
 
   // 로그인. -------------------------------------------------------------------------
   @Post('signIn')
-  signIn(@Body() body: SignInRequestDto) {
+  async signIn(@Body() body: SignInRequestDto) {
     try {
       return this.authService.signIn(body);
     } catch (error) {

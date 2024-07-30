@@ -2,8 +2,8 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
-import { SignUpRequestDto } from '../dtos/signup.req.dto';
-import * as bcrypt from 'bcrypt'
+import { SignUpRequestDto } from '../dtos/signup.request.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserRepository {
@@ -49,13 +49,7 @@ export class UserRepository {
     try {
       const user = await this.userRepository.findOne({
         where: { id },
-        select: [
-          'id',
-          'email',
-          'nickName',
-          'role',
-          'createdAt',
-        ],
+        select: ['id', 'email', 'nickName', 'role', 'createdAt'],
       });
       return user;
     } catch (error) {
@@ -76,8 +70,8 @@ export class UserRepository {
   async signOut(id: number) {
     try {
       await this.userRepository.update(id, {
-        hashedRefreshToken: null
-      })
+        hashedRefreshToken: null,
+      });
     } catch (error) {
       throw new HttpException('Server Error', 500);
     }
@@ -86,11 +80,11 @@ export class UserRepository {
   // 리프레쉬 토큰 해시화  --------------------------------------------------------------------
   async hashedRefreshToken(id: number, refreshToken: string) {
     try {
-      const hashedRefreshToken = await bcrypt.hash(refreshToken, 10)
+      const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
 
       await this.userRepository.update(id, {
         hashedRefreshToken: hashedRefreshToken,
-      })
+      });
     } catch (error) {
       throw new HttpException('Server Error', 500);
     }
@@ -99,11 +93,11 @@ export class UserRepository {
   // 리프레쉬 토큰 검증.  --------------------------------------------------------------------
   async validateRefreshToken(id: number, refreshToken: string) {
     try {
-      const user = await this.findUserById(id)
-      if(!user || !user.hashedRefreshToken) {
-        return '검증 실패..?'
+      const user = await this.findUserById(id);
+      if (!user || !user.hashedRefreshToken) {
+        return '검증 실패..?';
       }
-      return await bcrypt.compare(refreshToken, user.hashedRefreshToken)
+      return await bcrypt.compare(refreshToken, user.hashedRefreshToken);
     } catch (error) {
       throw new HttpException('Server Error', 500);
     }

@@ -32,10 +32,4 @@ export class UsersController {
       throw new HttpException('Server Errror', 500);
     }
   }
-
-  // 이미지 업로드 예정 ?? -------------------------------------------------------------------------
-  @Post()
-  uploadImg() {
-    return 'img';
-  }
 }

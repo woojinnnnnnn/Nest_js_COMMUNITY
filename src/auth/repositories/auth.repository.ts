@@ -6,9 +6,9 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
-import { SignUpRequestDto } from 'src/users/dtos/signup.req.dto';
+import { SignUpRequestDto } from 'src/users/dtos/signup.request.dto';
 import { Repository } from 'typeorm';
-import * as bcrypt from 'bcrypt'
+import * as bcrypt from 'bcrypt';
 
 // auth 에는 레포 가 없고 User <- 에서 만들어야 했는데 이미 늦었다..
 @Injectable()
@@ -81,14 +81,13 @@ export class AuthRepository {
     }
   }
 
-   // 리프레쉬 토큰 해시화  --------------------------------------------------------------------
+  // 리프레쉬 토큰 해시화  --------------------------------------------------------------------
   async hashedRefreshToken(id: number, refreshToken: string) {
     try {
       const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
-      await this.authRepository.update(id, { hashedRefreshToken })
+      await this.authRepository.update(id, { hashedRefreshToken });
     } catch (error) {
       throw new HttpException('Server Error', 500);
     }
   }
-
 }

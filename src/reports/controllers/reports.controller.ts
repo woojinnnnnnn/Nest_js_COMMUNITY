@@ -25,6 +25,7 @@ import { ReportRequestDto } from '../dtos/report.request.dto';
 export class ReportsController {
   constructor(private readonly reportService: ReportsService) {}
 
+  // 신고 확인.
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(RoleType.ADMIN)
   @Get()

@@ -4,7 +4,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { SignUpRequestDto } from 'src/users/dtos/signup.req.dto';
+import { SignUpRequestDto } from 'src/users/dtos/signup.request.dto';
 import * as bcrypt from 'bcrypt';
 import { SignInRequestDto } from '../dtos/signIn.request.dto';
 import { JwtService } from '@nestjs/jwt';
@@ -115,7 +115,7 @@ export class AuthService {
       throw new UnauthorizedException('Valid Failllll');
     }
 
-    const payload = { id: user.id, email: user.email, role: user.role};
+    const payload = { id: user.id, email: user.email, role: user.role };
     const tokens = await this.createToken(payload);
 
     await this.userRepository.hashedRefreshToken(user.id, tokens.refreshToken);
