@@ -1,4 +1,4 @@
-export class ResponseComuDto {
+export class ResponseBoardDto {
   id: number;
   title: string;
   content: string;

@@ -9,21 +9,28 @@ import { CommentRepositoty } from './repositories/comment.repository';
 import { UsersModule } from 'src/users/user.module';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { JwtStrtegy } from 'src/auth/jwt/jwt.strategy';
-import { Community } from 'src/entities/community.entity';
-import { CommunityModule } from 'src/communites/community.module';
+import { Board } from 'src/entities/board.entity';
+import { BoardModule } from 'src/boards/board.module';
 import { UserRepository } from 'src/users/repositories/user.repository';
-import { CommunityRepository } from 'src/communites/repositories/community.repository';
+import { BoardRepository } from 'src/boards/repositories/board.repository';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    TypeOrmModule.forFeature([Comment, Community, User]),
+    TypeOrmModule.forFeature([Comment, Board, User]),
     UsersModule,
-    CommunityModule,
+    BoardModule,
     JwtModule,
   ],
   controllers: [CommentController],
-  providers: [CommentService, CommentRepositoty, UserRepository, CommunityRepository, JwtStrtegy, JwtService],
-  exports: [CommentRepositoty]
+  providers: [
+    CommentService,
+    CommentRepositoty,
+    UserRepository,
+    BoardRepository,
+    JwtStrtegy,
+    JwtService,
+  ],
+  exports: [CommentRepositoty],
 })
 export class CommentModule {}

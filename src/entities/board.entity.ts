@@ -15,8 +15,8 @@ import { Comment } from './comment.entity';
 import { IsNotEmpty, IsString } from 'class-validator';
 import { Like } from './like.entity';
 
-@Entity('COMMUNITY')
-export class Community {
+@Entity('BOARD')
+export class Board {
   @PrimaryGeneratedColumn({ type: 'int' })
   id: number;
 
@@ -42,16 +42,16 @@ export class Community {
   @DeleteDateColumn({ type: 'timestamp' })
   deletedAt: Date | null;
 
-  @OneToMany(() => Comment, (comment) => comment.community)
+  @OneToMany(() => Comment, (comment) => comment.board)
   comment: Comment[];
 
-  @OneToMany(() => Report, (report) => report.community)
+  @OneToMany(() => Report, (report) => report.board)
   report: Report[]
 
-  @OneToMany(() => Like, (like) => like.community)
+  @OneToMany(() => Like, (like) => like.board)
   like: Like[]
 
-  @ManyToOne(() => User, (user) => user.community, {
+  @ManyToOne(() => User, (user) => user.board, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
   })

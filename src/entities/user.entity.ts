@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Community } from './community.entity';
+import { Board } from './board.entity';
 import { Comment } from './comment.entity';
 import { Like } from './like.entity';
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
@@ -53,8 +53,8 @@ export class User {
   @DeleteDateColumn({ type: 'timestamp' })
   deletedAt: Date | null;
 
-  @OneToMany(() => Community, (community) => community.user)
-  community: Community[];
+  @OneToMany(() => Board, (board) => board.user)
+  board: Board[];
 
   @OneToMany(() => Comment, (comment) => comment.user)
   comment: Comment[];

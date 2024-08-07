@@ -9,15 +9,15 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtStrtegy } from 'src/auth/jwt/jwt.strategy';
 import { User } from 'src/entities/user.entity';
 import { Comment } from 'src/entities/comment.entity';
-import { Community } from 'src/entities/community.entity';
+import { Board } from 'src/entities/board.entity';
 import { UserRepository } from 'src/users/repositories/user.repository';
 import { CommentRepositoty } from 'src/comments/repositories/comment.repository';
-import { CommunityRepository } from 'src/communites/repositories/community.repository';
+import { BoardRepository } from 'src/boards/repositories/board.repository';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    TypeOrmModule.forFeature([Report, User, Comment, Community]),
+    TypeOrmModule.forFeature([Report, User, Comment, Board]),
   ],
   controllers: [ReportsController],
   providers: [
@@ -25,7 +25,7 @@ import { CommunityRepository } from 'src/communites/repositories/community.repos
     ReportRepository,
     UserRepository,
     CommentRepositoty,
-    CommunityRepository,
+    BoardRepository,
     JwtService,
     JwtStrtegy,
   ],

@@ -12,10 +12,10 @@ export class LikeRepository {
   ) {}
 
   // 좋아요 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  async addLike(communityId: number, userId: number) {
+  async addLike(boardId: number, userId: number) {
     try {
       const like = this.likeRepository.create({
-        community: { id: communityId },
+        board: { id: boardId },
         user: { id: userId },
         flag: true,
       });
@@ -29,12 +29,12 @@ export class LikeRepository {
   > id <- 값이 커뮤니티 아이디 값이 되어 버려 새롭게 수정중.
    */
 
-  // communityId && userId 값 조회 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  async findLikeByCommunityAndUser(communityId: number, userId: number) {
+  // boardId && userId 값 조회 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  async findLikeByCommunityAndUser(boardId: number, userId: number) {
     try {
       return await this.likeRepository.findOne({
         where: {
-          community: { id: communityId },
+          board: { id: boardId },
           user: { id: userId },
         },
       });

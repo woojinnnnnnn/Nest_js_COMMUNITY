@@ -7,5 +7,5 @@ export class CreateCommentDto {
 
   @IsOptional()
   @IsInt()
-  parentCommentId?: number;
+  replyToId?: number;
 }

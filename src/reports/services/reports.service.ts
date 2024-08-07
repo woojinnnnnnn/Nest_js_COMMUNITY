@@ -2,12 +2,12 @@ import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { ReportRepository } from '../repositories/reports.repository';
 import { ReportRequestDto } from '../dtos/report.request.dto';
 import { UserRepository } from 'src/users/repositories/user.repository';
-import { CommunityRepository } from 'src/communites/repositories/community.repository';
+import { BoardRepository } from 'src/boards/repositories/board.repository';
 import { CommentRepositoty } from 'src/comments/repositories/comment.repository';
 import { User } from 'src/entities/user.entity';
 import { ReportDTO } from '../dtos/report.response.dto';
 import { UserDTO } from '../dtos/user.response.dto';
-import { CommunityDTO } from '../dtos/community.response.dto';
+import { BoardDTO } from '../dtos/board.response.dto';
 import { CommentDTO } from '../dtos/comment.response.dto';
 
 @Injectable()
@@ -15,19 +15,20 @@ export class ReportsService {
   constructor(
     private readonly reportRepository: ReportRepository,
     private readonly userRepository: UserRepository,
-    private readonly communityRepository: CommunityRepository,
+    private readonly boardRepository: BoardRepository,
     private readonly commentRepository: CommentRepositoty,
   ) {}
 
-  async findAllReport(): Promise<ReportDTO[]> { // 여러 블로그를 뒤져 봤을때 이렇게 프로미스 하던데 솔직히 이해는 하고 쓰는 느낌은 아님.
+  async findAllReport(): Promise<ReportDTO[]> {
+    // 여러 블로그를 뒤져 봤을때 이렇게 프로미스 하던데 솔직히 이해는 하고 쓰는 느낌은 아님.
     try {
-      const reports = await this.reportRepository.findAllReport()
-      return reports.map(report => {
+      const reports = await this.reportRepository.findAllReport();
+      return reports.map((report) => {
         const reportDto = new ReportDTO();
         reportDto.id = report.id;
         reportDto.reason = report.reason;
         reportDto.tags = report.tags;
-  
+
         if (report.user) {
           const userDto = new UserDTO();
           userDto.id = report.user.id;
@@ -36,22 +37,22 @@ export class ReportsService {
           userDto.role = report.user.role;
           reportDto.user = userDto;
         }
-  
-        if (report.community) {
-          const communityDto = new CommunityDTO();
-          communityDto.id = report.community.id;
-          communityDto.title = report.community.title;
-          communityDto.content = report.community.content;
-          reportDto.community = communityDto;
+
+        if (report.board) {
+          const BoardDto = new BoardDTO();
+          BoardDto.id = report.board.id;
+          BoardDto.title = report.board.title;
+          BoardDto.content = report.board.content;
+          reportDto.board = BoardDto;
         }
-  
+
         if (report.comment) {
           const commentDto = new CommentDTO();
           commentDto.id = report.comment.id;
           commentDto.content = report.comment.content;
           reportDto.comment = commentDto;
         }
-  
+
         if (report.reporter) {
           const reporterDto = new UserDTO();
           reporterDto.id = report.reporter.id;
@@ -60,7 +61,7 @@ export class ReportsService {
           reporterDto.role = report.reporter.role;
           reportDto.reporter = reporterDto;
         }
-  
+
         return reportDto;
       }); // 새 배열을 만들어 보기 쉽게끔 리턴. 해주는데 솔직히 잘 모르겠음..
     } catch (error) {
@@ -96,25 +97,25 @@ export class ReportsService {
     }
   }
 
-  async createComuReport(
+  async createBoardReport(
     body: ReportRequestDto,
-    reportedComuId: number,
+    reportedBoardId: number,
     reporter: User,
   ) {
     try {
-      const reportedComu =
-        await this.communityRepository.findOneComuId(reportedComuId);
-      if (!reportedComu) {
+      const reportedBoard =
+        await this.boardRepository.findOneBoardId(reportedBoardId);
+      if (!reportedBoard) {
         throw new NotFoundException('Comuunity nottr founddddd');
       }
-      const report = await this.reportRepository.createComuReport(
+      const report = await this.reportRepository.createBoardReport(
         body,
-        reportedComu,
+        reportedBoard,
         reporter,
       );
       return {
         id: report.id,
-        reportedComu,
+        reportedBoard,
         reason: report.reason,
         tags: report.tags,
         reporter: report.reporter,

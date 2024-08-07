@@ -39,7 +39,7 @@ export class ReportsController {
   }
   
   @UseGuards(JwtAuthGuard)
-  @Post('/user/:id')
+  @Post('/users/:userId')
   async createUserReport(
     @Body() body: ReportRequestDto,
     @Param('id') userId: number, // 신고 당할 사람
@@ -50,14 +50,14 @@ export class ReportsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('/community/:id')
-  async createComuReport(@Body() body: ReportRequestDto, @Param('id') communityId: number, @Req() req) {
+  @Post('/boards/:boardId')
+  async createBoardReport(@Body() body: ReportRequestDto, @Param('id') boardId: number, @Req() req) {
       const reporter = req.user; // 이름만 봐도 알겠지만 신고 '한' 유저
-      return await this.reportService.createComuReport(body, communityId, reporter)
+      return await this.reportService.createBoardReport(body, boardId, reporter)
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('comment/:id')
+  @Post('comments/:commentId')
   async createCommentReport(@Body() body: ReportRequestDto, @Param('id') commentId: number, @Req() req) {
       const reporter = req.user;
       return await this.reportService.createCommentReport(body, commentId, reporter)

@@ -2,25 +2,26 @@ import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { CommentRepositoty } from '../repositories/comment.repository';
 import { CreateCommentDto } from '../dtos/create.comment.dto';
 import { UserRepository } from 'src/users/repositories/user.repository';
-import { CommunityRepository } from 'src/communites/repositories/community.repository';
+import { BoardRepository } from 'src/boards/repositories/board.repository';
 import { Comment } from 'src/entities/comment.entity';
 import { User } from 'src/entities/user.entity';
+import { CommentResponseDto } from '../dtos/response.comment.dto';
 
 @Injectable()
 export class CommentService {
   constructor(
     private readonly commentRepository: CommentRepositoty,
     private readonly userRepository: UserRepository,
-    private readonly communityRepository: CommunityRepository,
+    private readonly boardRepository: BoardRepository,
   ) {}
 
   // 댓글 및 대댓글 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   async createComment(id: number, body: CreateCommentDto, userId: number) {
     try {
-      const community = await this.communityRepository.findOneComuId(id);
+      const board = await this.boardRepository.findOneBoardId(id);
 
-      if (!community) {
-        throw new NotFoundException(`Community with id ${id} not found`);
+      if (!board) {
+        throw new NotFoundException(`Board with id ${id} not found`);
       }
 
       const user = await this.userRepository.findUserById(userId);
@@ -29,33 +30,37 @@ export class CommentService {
       }
 
       const newComment = new Comment();
-      newComment.community = community;
+      newComment.board = board;
       newComment.content = body.content;
-      newComment.user = user;
+      newComment.user = {
+        id: user.id,
+        email: user.email,
+        nickName: user.nickName,
+        role: user.role,
+      } as any;
 
       // 여기서 부모 댓글.
-      if (body.parentCommentId) {
-        const parentComment = await this.commentRepository.findOne(
-          body.parentCommentId,
-        );
-        if (!parentComment) {
+      if (body.replyToId) {
+        const replyTo = await this.commentRepository.findOne(body.replyToId);
+        if (!replyTo) {
           throw new NotFoundException(
-            `Parent comment with id ${body.parentCommentId} not found`,
+            `Parent comment with id ${body.replyToId} not found`,
           );
         }
-        newComment.parentComment = parentComment;
+        newComment.replyTo = replyTo;
       }
 
-      return this.commentRepository.createComment(newComment);
+      const savedComment = await this.commentRepository.createComment(newComment);
+      return new CommentResponseDto(savedComment);
     } catch (error) {
       throw new HttpException('Server Error', 500);
     }
   }
 
   // 커뮤니티 id 를 통한 댓글 조회 (전체 조회)- - - - - - - - - - - - - - - - - - - - - - - - - - -
-  async getCommentByCommunityId(id: number) {
+  async getCommentByBoardId(id: number) {
     try {
-      return this.commentRepository.findCommentByCommunityId(id);
+      return this.commentRepository.findCommentByBoardId(id);
     } catch (error) {
       throw new HttpException('Server Error', 500);
     }
@@ -66,7 +71,7 @@ export class CommentService {
     try {
       const user = await this.userRepository.findUserById(userId);
       if (!user) {
-        throw new NotFoundException('USererjsdfb');
+        throw new NotFoundException('User Not Found');
       }
       const deleteComment = await this.commentRepository.deleteComment(
         id,

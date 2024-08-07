@@ -15,17 +15,17 @@ import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 
 @UseInterceptors(SuccessInterceptor)
 @UseFilters(HttpExceptionFilter)
-@Controller('community/:communityId/like')
+@Controller('boards/:boardId/like')
 export class LikesController {
   constructor(private readonly likeService: LikesService) {}
 
   // 좋아요 && 취소 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   @UseGuards(JwtAuthGuard)
   @Post()
-  async addLike(@Param('communityId') communityId: number, @Req() req) {
+  async addLike(@Param('boardId') boardId: number, @Req() req) {
     try {
       const userId = req.user.id;
-      return this.likeService.addLike(communityId, userId)
+      return this.likeService.addLike(boardId, userId)
     } catch (error) {
       throw new HttpException('Server Error', 500);
     }

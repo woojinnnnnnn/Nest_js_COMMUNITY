@@ -1,6 +1,12 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { User } from './user.entity';
-import { Community } from './community.entity';
+import { Board } from './board.entity';
 
 @Entity('LIKE')
 export class Like {
@@ -17,10 +23,10 @@ export class Like {
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   user: User;
 
-  @ManyToOne(() => Community, (community) => community.like, {
+  @ManyToOne(() => Board, (board) => board.like, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
   })
-  @JoinColumn({ name: 'communityId', referencedColumnName: 'id' })
-  community: Community;
+  @JoinColumn({ name: 'boardId', referencedColumnName: 'id' })
+  board: Board;
 }

@@ -2,18 +2,16 @@ import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { LoggerMiddleware } from './logger/logger.middleware';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CommunityModule } from './communites/community.module';
+import { BoardModule } from './boards/board.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/user.module';
 import { AuthModule } from './auth/auth.module';
 import { User } from './entities/user.entity';
-import { Community } from './entities/community.entity';
+import { Board } from './entities/board.entity';
 import { Comment } from './entities/comment.entity';
 import { Like } from './entities/like.entity';
 import { Report } from './entities/report.entity';
-import { CommunityController } from './communites/controllers/community.controller';
-import { CommunityService } from './communites/services/community.service';
 import { CommentModule } from './comments/comment.module';
 import { LikesModule } from './likes/likes.module';
 import { ReportsModule } from './reports/reports.module';
@@ -28,13 +26,13 @@ import { ReportsModule } from './reports/reports.module';
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [User, Community, Comment, Like, Report],
+      entities: [User, Board, Comment, Like, Report],
       synchronize: false,
       logging: true,
       keepConnectionAlive: true,
       charset: 'utf8mb4',
     }),
-    CommunityModule,
+    BoardModule,
     UsersModule,
     AuthModule,
     CommentModule,
@@ -46,6 +44,6 @@ import { ReportsModule } from './reports/reports.module';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes('*')
+    consumer.apply(LoggerMiddleware).forRoutes('*');
   }
 }

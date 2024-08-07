@@ -12,7 +12,7 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 import { Report } from './report.entity';
-import { Community } from './community.entity';
+import { Board } from './board.entity';
 
 @Entity('COMMENT')
 export class Comment {
@@ -34,15 +34,15 @@ export class Comment {
   deletedAt: Date;
 
   @OneToMany(() => Report, (report) => report.comment)
-  report: Report[]
+  report: Report[];
 
-  @OneToMany(() => Comment, (childComment) => childComment.parentComment)
+  @OneToMany(() => Comment, (replies) => replies.replyTo)
   @JoinColumn()
-  childComments: Comment[]; // replies
+  replies: Comment[]; // replies
 
-  @ManyToOne(() => Comment, (parentComment) => parentComment.childComments)
+  @ManyToOne(() => Comment, (replyTo) => replyTo.replies)
   @JoinColumn()
-  parentComment: Comment; // 나중에 replyTo 로 변경.
+  replyTo: Comment; // 나중에 replyTo 로 변경.
 
   @ManyToOne(() => User, (user) => user.comment, {
     onDelete: 'SET NULL',
@@ -51,10 +51,12 @@ export class Comment {
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   user: User;
 
-  @ManyToOne(() => Community, (community) => community.comment, {
+  @ManyToOne(() => Board, (board) => board.comment, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
   })
-  @JoinColumn({ name: 'communityId', referencedColumnName: 'id' })
-  community: Community;
+  @JoinColumn({ name: 'boardId', referencedColumnName: 'id' })
+  board: Board;
 }
+
+// 변경 끝

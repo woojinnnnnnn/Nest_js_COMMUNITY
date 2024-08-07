@@ -20,7 +20,7 @@ import { HttpExceptionFilter } from 'src/common/exceptions/http-exception.filter
 
 @UseInterceptors(SuccessInterceptor)
 @UseFilters(HttpExceptionFilter)
-@Controller('community/:communityId/comment')
+@Controller('boards/:boardId/comment')
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
@@ -28,13 +28,13 @@ export class CommentController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async createComment(
-    @Param('communityId') communityId: number,
+    @Param('boardId') boardId: number,
     @Body() body: CreateCommentDto,
     @Req() req,
   ) {
     try {
       const userId = req.user.id;
-      return this.commentService.createComment(communityId, body, userId);
+      return this.commentService.createComment(boardId, body, userId);
     } catch (error) {
       throw new HttpException('Server Error', 500);
     }
@@ -42,9 +42,9 @@ export class CommentController {
 
   // 커뮤니티 아이디 조회 를 통한 댓글 조회 - - - - - - - - - - - - - - - - - - - - - - - -
   @Get()
-  async getCommentsByCommunityId(@Param('communityId') communityId: number) {
+  async getCommentsByBoardId(@Param('boardId') boardId: number) {
     try {
-      return this.commentService.getCommentByCommunityId(communityId);
+      return this.commentService.getCommentByBoardId(boardId);
     } catch (error) {
       throw new HttpException('Server Error', 500);
     }

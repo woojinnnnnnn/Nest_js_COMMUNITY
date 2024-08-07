@@ -27,14 +27,14 @@ export class CommentRepositoty {
   }
 
   // 코멘트 찾기 전체 조회 - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  async findCommentByCommunityId(communityId: number) {
+  async findCommentByBoardId(boardId: number) {
     try {
       return this.commentRepository.find({
         where: {
           deletedAt: null,
-          community: { id: communityId },
+          board: { id: boardId },
         },
-        relations: ['user', 'parentComment', 'childComments'],
+        relations: ['user', 'replyTo', 'replies'],
       });
     } catch (error) {
       throw new HttpException('Server Error', 500);
@@ -46,7 +46,7 @@ export class CommentRepositoty {
     try {
       return this.commentRepository.findOne({
         where: { id },
-        relations: ['user', 'parentComment', 'childComments'],
+        relations: ['user', 'replyTo', 'replies'],
       });
     } catch (error) {
       throw new HttpException('Server Error', 500);

@@ -1,6 +1,6 @@
 import { IsInt, IsString } from 'class-validator';
 
-export class CommunityDTO {
+export class BoardDTO {
   @IsInt()
   id: number;
 

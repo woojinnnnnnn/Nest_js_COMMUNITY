@@ -4,7 +4,7 @@ import { Report } from 'src/entities/report.entity';
 import { Repository } from 'typeorm';
 import { ReportRequestDto } from '../dtos/report.request.dto';
 import { User } from 'src/entities/user.entity';
-import { Community } from 'src/entities/community.entity';
+import { Board } from 'src/entities/board.entity';
 import { Comment } from 'src/entities/comment.entity';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class ReportRepository {
   async findAllReport() {
     try {
       const reports = await this.reportRepository.find({
-        relations: ['user', 'community', 'comment', 'reporter'],
+        relations: ['user', 'board', 'comment', 'reporter'],
       });
       return reports;
     } catch (error) {
@@ -45,9 +45,9 @@ export class ReportRepository {
     }
   }
 
-  async createComuReport(
+  async createBoardReport(
     body: ReportRequestDto,
-    reportedComu: Community,
+    reportedBoard: Board,
     reporter: User,
   ) {
     try {
@@ -55,7 +55,7 @@ export class ReportRepository {
       const report = this.reportRepository.create({
         reason,
         tags,
-        community: reportedComu,
+        board: reportedBoard,
         reporter: reporter,
       });
       return await this.reportRepository.save(report);

@@ -4,19 +4,19 @@ import { LikesService } from './services/likes.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Like } from 'src/entities/like.entity';
-import { Community } from 'src/entities/community.entity';
+import { Board } from 'src/entities/board.entity';
 import { User } from 'src/entities/user.entity';
 import { UsersModule } from 'src/users/user.module';
-import { CommunityModule } from 'src/communites/community.module';
+import { BoardModule } from 'src/boards/board.module';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { LikeRepository } from './repositories/likes.repository';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    TypeOrmModule.forFeature([Like, Community, User]),
+    TypeOrmModule.forFeature([Like, Board, User]),
     UsersModule,
-    CommunityModule,
+    BoardModule,
     JwtModule,
   ],
   controllers: [LikesController],

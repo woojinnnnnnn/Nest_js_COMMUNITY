@@ -4,7 +4,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { SignUpRequestDto } from 'src/users/dtos/signup.request.dto';
+import { SignUpRequestDto } from 'src/auth/dtos/signup.request.dto';
 import * as bcrypt from 'bcrypt';
 import { SignInRequestDto } from '../dtos/signIn.request.dto';
 import { JwtService } from '@nestjs/jwt';
@@ -59,7 +59,9 @@ export class AuthService {
       if (!user) {
         throw new NotFoundException(`Not Exist ${user}`);
       }
+
       const isPasswordValidated = await bcrypt.compare(password, user.password);
+
       if (isPasswordValidated) {
         const payload = { id: user.id, email: user.email, role: user.role };
         const { accessToken, refreshToken } = await this.createToken(payload);
@@ -103,7 +105,7 @@ export class AuthService {
     const user = await this.userRepository.findUserById(id);
 
     if (!user) {
-      throw new NotFoundException('User Not FOund');
+      throw new NotFoundException('User Not Found');
     }
 
     const isRefreshTokenValid = await this.userRepository.validateRefreshToken(
@@ -112,7 +114,7 @@ export class AuthService {
     );
 
     if (!isRefreshTokenValid) {
-      throw new UnauthorizedException('Valid Failllll');
+      throw new UnauthorizedException('Valid Faill');
     }
 
     const payload = { id: user.id, email: user.email, role: user.role };

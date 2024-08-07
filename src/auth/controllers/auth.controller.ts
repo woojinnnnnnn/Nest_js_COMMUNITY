@@ -9,8 +9,9 @@ import {
   UseFilters,
   UseGuards,
   UseInterceptors,
+  ValidationPipe,
 } from '@nestjs/common';
-import { SignUpRequestDto } from 'src/users/dtos/signup.request.dto';
+import { SignUpRequestDto } from 'src/auth/dtos/signup.request.dto';
 import { AuthService } from '../services/auth.service';
 import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
 import { HttpExceptionFilter } from 'src/common/exceptions/http-exception.filter';
@@ -25,7 +26,7 @@ export class AuthController {
 
   // 회원 가입. -------------------------------------------------------------------------
   @Post('signUp')
-  async signUp(@Body() body: SignUpRequestDto) {
+  async signUp(@Body(ValidationPipe) body: SignUpRequestDto) {
     try {
       const user = this.authService.signUp(body);
       return user;
@@ -40,7 +41,7 @@ export class AuthController {
     try {
       return this.authService.signIn(body);
     } catch (error) {
-      throw new HttpException('SErverERROR', 500);
+      throw new HttpException('ServerError', 500);
     }
   }
 
@@ -54,9 +55,9 @@ export class AuthController {
 
       // 여기 저기 뒤져 보니까 아래 예전에 하던 방식으로 리스폰스 가능 하단걸 깨닮..
       // 이러면 근데 인터셉터에도 안걸리네
-      return res.status(200).json({ message: 'Succcccceeesss SignOUT' });
+      return res.status(200).json({ message: 'Success.' });
     } catch (error) {
-      throw new HttpException('SERVER ERROR', 500);
+      throw new HttpException('ServerError', 500);
     }
   }
 }

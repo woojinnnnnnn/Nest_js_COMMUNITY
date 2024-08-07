@@ -6,7 +6,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Community } from './community.entity';
+import { Board } from './board.entity';
 import { Comment } from './comment.entity';
 import { User } from './user.entity';
 
@@ -29,12 +29,12 @@ export class Report {
   @Column({ type: 'varchar' })
   tags: reportTag;
 
-  @ManyToOne(() => Community, (cummunity) => cummunity.report, {
+  @ManyToOne(() => Board, (board) => board.report, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
   })
-  @JoinColumn({ name: 'communityId', referencedColumnName: 'id' })
-  community: Community;
+  @JoinColumn({ name: 'boardId', referencedColumnName: 'id' })
+  board: Board;
 
   @ManyToOne(() => User, (user) => user.report, {
     onDelete: 'SET NULL',

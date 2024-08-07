@@ -1,7 +1,7 @@
 import { IsEnum, IsOptional, IsString, IsInt } from 'class-validator';
 import { reportTag } from 'src/entities/report.entity';
 import { UserDTO } from './user.response.dto';
-import { CommunityDTO } from './community.response.dto';
+import { BoardDTO } from './board.response.dto';
 import { CommentDTO } from './comment.response.dto';
 
 export class ReportDTO {
@@ -15,7 +15,7 @@ export class ReportDTO {
   tags: reportTag;
 
   @IsOptional()
-  community?: CommunityDTO;
+  board?: BoardDTO;
 
   @IsOptional()
   user?: UserDTO;

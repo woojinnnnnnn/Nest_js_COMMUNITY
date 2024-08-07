@@ -23,7 +23,7 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Get('info')
-  getUserInfo(@Req() req) {
+  findUserInfo(@Req() req) {
     try {
       const user = req.user;
       const { id, email } = user;
