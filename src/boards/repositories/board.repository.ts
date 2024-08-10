@@ -104,6 +104,7 @@ export class BoardRepository {
     }
   }
 
+  // 게시글 id 값 찾기.
   async findOneBoardId(id: number) {
     return await this.boardRepository.findOne({
       where: { id },

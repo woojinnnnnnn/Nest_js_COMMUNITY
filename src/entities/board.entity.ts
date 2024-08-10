@@ -30,6 +30,11 @@ export class Board {
   @Column({ type: 'varchar' })
   content: string;
 
+  // 이미지 유알엘 추가. 
+  @IsString()
+  @Column({ type: 'varchar' })
+  imageUrl: string
+
   @Column({ type: 'int', default: 0 }) 
   veiwCount: number | null;
 

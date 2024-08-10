@@ -11,13 +11,15 @@ export class BoardService {
     private readonly userRepository: UserRepository,
   ) {}
 
+
+  // NotFoundException? 이 맞는지 모르겠네. 
   // 게시글 작성 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   async createBoard(body: CreateBoardDto, userId: number) {
     try {
       const user = await this.userRepository.findUserById(userId);
 
       if (!user) {
-        throw new NotFoundException('User not found');
+        throw new NotFoundException('User Not Found');
       }
 
       const createBoard = await this.boardRepository.createBoard(body, user);
@@ -71,6 +73,7 @@ export class BoardService {
         body,
         user,
       );
+
       // 해당 게시판이 존재 하지 않을 시.
       if(!updateBoard) {
         throw new NotFoundException(`Board with id ${id} not found`);
@@ -103,7 +106,7 @@ export class BoardService {
     try {
       const user = await this.userRepository.findUserById(userId);
       if (!user) {
-        throw new NotFoundException('User Not FOFOFOFOFUNd');
+        throw new NotFoundException('User Not Found?');
       }
       const deleteBoard = await this.boardRepository.deleteBoard(id, user);
 

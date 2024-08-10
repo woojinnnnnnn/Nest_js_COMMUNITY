@@ -45,7 +45,10 @@ export class CommentRepositoty {
   async findOne(id: number) {
     try {
       return this.commentRepository.findOne({
-        where: { id },
+        where: {
+           id,
+           deletedAt: null 
+          },
         relations: ['user', 'replyTo', 'replies'],
       });
     } catch (error) {
