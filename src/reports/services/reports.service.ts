@@ -93,7 +93,11 @@ export class ReportsService {
         reporter: report.reporter,
       };
     } catch (error) {
-      throw new HttpException('Server Error', 500);
+      if (error instanceof NotFoundException) {
+        throw error;
+      } else {
+        throw new HttpException('Server Error', 500);
+      }
     }
   }
 
@@ -121,7 +125,11 @@ export class ReportsService {
         reporter: report.reporter,
       };
     } catch (error) {
-      throw new HttpException('server errror', 500);
+      if (error instanceof NotFoundException) {
+        throw error;
+      } else {
+        throw new HttpException('Server Error', 500);
+      }
     }
   }
 
@@ -149,7 +157,11 @@ export class ReportsService {
         reporter: report.reporter,
       };
     } catch (error) {
-      throw new HttpException('Server Error', 500);
+      if (error instanceof NotFoundException) {
+        throw error;
+      } else {
+        throw new HttpException('Server Error', 500);
+      }
     }
   }
 }

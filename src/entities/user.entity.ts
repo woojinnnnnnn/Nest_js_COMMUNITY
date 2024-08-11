@@ -5,6 +5,7 @@ import {
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
+  Unique,
   UpdateDateColumn,
 } from 'typeorm';
 import { Board } from './board.entity';
@@ -19,6 +20,7 @@ export enum UserStatus {
 }
 
 @Entity('USER')
+@Unique(['email', 'nickName'])
 export class User {
   @PrimaryGeneratedColumn({ type: 'int' })
   id: number;

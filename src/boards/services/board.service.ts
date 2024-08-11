@@ -1,4 +1,9 @@
-import { ForbiddenException, HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  HttpException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { BoardRepository } from '../repositories/board.repository';
 import { CreateBoardDto } from '../dtos/create.request.dto';
 import { UpdateBoardDto } from '../dtos/update.request.dto';
@@ -11,8 +16,7 @@ export class BoardService {
     private readonly userRepository: UserRepository,
   ) {}
 
-
-  // NotFoundException? 이 맞는지 모르겠네. 
+  // NotFoundException? 이 맞는지 모르겠네.
   // 게시글 작성 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   async createBoard(body: CreateBoardDto, userId: number) {
     try {
@@ -34,7 +38,11 @@ export class BoardService {
         nickName: createBoard.user.nickName,
       };
     } catch (error) {
-      throw new HttpException('Server Error', 500);
+      if (error instanceof NotFoundException) {
+        throw error;
+      } else {
+        throw new HttpException('Server Error', 500);
+      }
     }
   }
 
@@ -56,7 +64,11 @@ export class BoardService {
       }
       return board;
     } catch (error) {
-      throw new HttpException('Server Error', 500);
+      if (error instanceof NotFoundException) {
+        throw error;
+      } else {
+        throw new HttpException('Server Error', 500);
+      }
     }
   }
 
@@ -65,7 +77,7 @@ export class BoardService {
     try {
       const user = await this.userRepository.findUserById(userId);
       if (!user) {
-        throw new NotFoundException('User Not Founed?');
+        throw new NotFoundException('User Not Found');
       }
 
       const updateBoard = await this.boardRepository.updateBoard(
@@ -75,7 +87,7 @@ export class BoardService {
       );
 
       // 해당 게시판이 존재 하지 않을 시.
-      if(!updateBoard) {
+      if (!updateBoard) {
         throw new NotFoundException(`Board with id ${id} not found`);
       }
       // 해당 게시판 권한이 없을 시.
@@ -84,7 +96,7 @@ export class BoardService {
           'You Do Not Have Permission To Edit This Post',
         );
       }
-      
+
       // 리스폰스 디티오 별도 관리 인원
       return {
         id: updateBoard.id,
@@ -97,7 +109,14 @@ export class BoardService {
         nickName: updateBoard.user.nickName,
       };
     } catch (error) {
-      throw new HttpException('Server Error', 500);
+      if (
+        error instanceof NotFoundException ||
+        error instanceof ForbiddenException
+      ) {
+        throw error;
+      } else {
+        throw new HttpException('Server Error', 500);
+      }
     }
   }
 
@@ -106,7 +125,7 @@ export class BoardService {
     try {
       const user = await this.userRepository.findUserById(userId);
       if (!user) {
-        throw new NotFoundException('User Not Found?');
+        throw new NotFoundException('User Not Found');
       }
       const deleteBoard = await this.boardRepository.deleteBoard(id, user);
 
@@ -121,7 +140,7 @@ export class BoardService {
       }
 
       if (deleteBoard.deletedAt !== null) {
-        throw new HttpException('Already Gone.', 200);
+        throw new HttpException('Already Gone.', 400);
       }
 
       return {
@@ -135,7 +154,15 @@ export class BoardService {
         nickName: deleteBoard.user.nickName,
       };
     } catch (error) {
-      throw new HttpException('Server Error', 500);
+      if (
+        error instanceof NotFoundException ||
+        error instanceof ForbiddenException ||
+        error instanceof HttpException
+      ) {
+        throw error;
+      } else {
+        throw new HttpException('Server Error', 500);
+      }
     }
   }
 }

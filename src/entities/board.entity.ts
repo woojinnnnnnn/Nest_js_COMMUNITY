@@ -30,9 +30,9 @@ export class Board {
   @Column({ type: 'varchar' })
   content: string;
 
-  // 이미지 유알엘 추가. 
+  // 이미지 추가. 
   @IsString()
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   imageUrl: string
 
   @Column({ type: 'int', default: 0 }) 

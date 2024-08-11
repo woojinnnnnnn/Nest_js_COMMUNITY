@@ -11,6 +11,7 @@ async function bootstrap() {
   });
   // HTTP 예외 처리 필터 -------------------------------------------------------
   app.useGlobalFilters(new HttpExceptionFilter());
+  // try-catch 로 묶으니 위에서 걸리질 않음.. 
   // class-validation -------------------------------------------------------
   app.useGlobalPipes(new ValidationPipe());
   // CORS -------------------------------------------------------------------

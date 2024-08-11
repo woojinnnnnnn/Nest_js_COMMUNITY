@@ -2,7 +2,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
-import { SignUpRequestDto } from '../../auth/dtos/signup.request.dto';
+import { SignUpRequestDto } from '../../auth/dtos/signUp.requst.dto'
 import * as bcrypt from 'bcrypt';
 
 @Injectable()

@@ -1,16 +1,18 @@
 import {
+  BadRequestException,
   HttpException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { SignUpRequestDto } from 'src/auth/dtos/signup.request.dto';
 import * as bcrypt from 'bcrypt';
 import { SignInRequestDto } from '../dtos/signIn.request.dto';
 import { JwtService } from '@nestjs/jwt';
 import { Payload } from '../jwt/jwt.payload';
 import { UserRepository } from 'src/users/repositories/user.repository';
 import { ConfigService } from '@nestjs/config';
+import { SignUpRequestDto } from '../dtos/signUp.requst.dto';
+import { SignUpVerifyPasswordRequestDto } from 'src/auth/dtos/signUpVerifyPasswordRequest.request.dto';
 
 @Injectable()
 export class AuthService {
@@ -21,31 +23,46 @@ export class AuthService {
   ) {}
 
   // 회원 가입 ------------------------------------------------------------------------------------
-  async signUp(body: SignUpRequestDto) {
+  async signUp(body: SignUpVerifyPasswordRequestDto) {
     try {
-      const { email, nickName, password } = body;
+      const { email, nickName, password, verifyPassword } = body;
       const isExistUser = await this.userRepository.findUserByEmail(email);
 
       if (isExistUser) {
-        throw new UnauthorizedException(`${email} is Already Exists..`);
+        throw new HttpException(`${email} is Already Exists..`, 409);
       }
       const isExistNickName =
         await this.userRepository.findUserByNickName(nickName);
 
       if (isExistNickName) {
-        throw new UnauthorizedException(`${nickName} is Already Exists`);
+        throw new HttpException(`${nickName} is Already Exists`, 409);
+      }
+
+      if (password !== verifyPassword) {
+        throw new BadRequestException('Passwords do not match');
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      const user = await this.userRepository.createUser({
+      const signUpUser: SignUpRequestDto = {
         email,
         nickName,
         password: hashedPassword,
-      });
+      };
+
+      const user = await this.userRepository.createUser(signUpUser);
+
       return user.readOnlyData;
     } catch (error) {
-      throw new HttpException('Server Error', 500);
+      // 이렇게 분기 처리 해야, 에러가 제대로 전달.
+      if (
+        error instanceof HttpException ||
+        error instanceof BadRequestException
+      ) {
+        throw error;
+      } else {
+        throw new HttpException('Server Error', 500);
+      }
     }
   }
 
@@ -71,7 +88,11 @@ export class AuthService {
         return { accessToken, refreshToken };
       }
     } catch (error) {
-      throw new HttpException('Server Error', 500);
+      if (error instanceof NotFoundException) {
+        throw error;
+      } else {
+        throw new HttpException('Server Error', 500);
+      }
     }
   }
 
@@ -102,26 +123,38 @@ export class AuthService {
 
   // 리프레쉬 토큰 검중 후 재발급.  -----------------------------------------------------------------------------
   async refreshTokens(id: number, refreshToken: string) {
-    const user = await this.userRepository.findUserById(id);
+    try {
+      const user = await this.userRepository.findUserById(id);
 
-    if (!user) {
-      throw new NotFoundException('User Not Found');
+      if (!user) {
+        throw new NotFoundException('User Not Found');
+      }
+
+      const isRefreshTokenValid =
+        await this.userRepository.validateRefreshToken(id, refreshToken);
+
+      if (!isRefreshTokenValid) {
+        throw new UnauthorizedException('Valid Faill');
+      }
+
+      const payload = { id: user.id, email: user.email, role: user.role };
+      const tokens = await this.createToken(payload);
+
+      await this.userRepository.hashedRefreshToken(
+        user.id,
+        tokens.refreshToken,
+      );
+
+      return tokens;
+    } catch (error) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof UnauthorizedException
+      ) {
+        throw error;
+      } else {
+        throw new HttpException('Server Error', 500);
+      }
     }
-
-    const isRefreshTokenValid = await this.userRepository.validateRefreshToken(
-      id,
-      refreshToken,
-    );
-
-    if (!isRefreshTokenValid) {
-      throw new UnauthorizedException('Valid Faill');
-    }
-
-    const payload = { id: user.id, email: user.email, role: user.role };
-    const tokens = await this.createToken(payload);
-
-    await this.userRepository.hashedRefreshToken(user.id, tokens.refreshToken);
-
-    return tokens;
   }
 }

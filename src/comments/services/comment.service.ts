@@ -1,4 +1,9 @@
-import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  HttpException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CommentRepositoty } from '../repositories/comment.repository';
 import { CreateCommentDto } from '../dtos/create.comment.dto';
 import { UserRepository } from 'src/users/repositories/user.repository';
@@ -50,10 +55,15 @@ export class CommentService {
         newComment.replyTo = replyTo;
       }
 
-      const savedComment = await this.commentRepository.createComment(newComment);
+      const savedComment =
+        await this.commentRepository.createComment(newComment);
       return new CommentResponseDto(savedComment);
     } catch (error) {
-      throw new HttpException('Server Error', 500);
+      if (error instanceof NotFoundException) {
+        throw error;
+      } else {
+        throw new HttpException('Server Error', 500);
+      }
     }
   }
 
@@ -73,10 +83,21 @@ export class CommentService {
       if (!user) {
         throw new NotFoundException('User Not Found');
       }
+      if (!id) {
+        throw new NotFoundException(`${id}, Not Found`);
+      }
+
+      if (user.id !== userId) {
+        throw new ForbiddenException(
+          'You Do Not Have Permission To Edit This Comment',
+        );
+      }
+
       const deleteComment = await this.commentRepository.deleteComment(
         id,
         user,
       );
+
       return {
         id: deleteComment.id,
         content: deleteComment.content,
@@ -85,7 +106,14 @@ export class CommentService {
         nickName: deleteComment.user.nickName,
       };
     } catch (error) {
-      throw new HttpException('Server error', 500);
+      if (
+        error instanceof NotFoundException ||
+        error instanceof ForbiddenException
+      ) {
+        throw error;
+      } else {
+        throw new HttpException('Server error', 500);
+      }
     }
   }
 }

@@ -63,13 +63,6 @@ export class CommentRepositoty {
         where: { id },
         relations: ['user'],
       });
-      if (!comment) {
-        throw new NotFoundException('못찾았데');
-      }
-      if (comment.user.id !== user.id) {
-        throw new ForbiddenException('권한업데');
-      }
-
       await this.commentRepository.softDelete(id);
       return comment;
     } catch (error) {

@@ -14,8 +14,7 @@ export class LikesService {
   // 좋아요 && 취소 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   async addLike(boardId: number, userId: number) {
     try {
-      const community =
-        await this.boardRepository.findOneBoardId(boardId);
+      const community = await this.boardRepository.findOneBoardId(boardId);
       if (!community) {
         throw new NotFoundException('Community not found');
       }
@@ -36,7 +35,11 @@ export class LikesService {
 
       return await this.likeRepository.addLike(boardId, userId);
     } catch (error) {
-      throw new HttpException('Server Error', 500);
+      if (error instanceof NotFoundException) {
+        throw error;
+      } else {
+        throw new HttpException('Server Error', 500);
+      }
     }
   }
 }

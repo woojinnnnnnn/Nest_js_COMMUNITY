@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Get,
   HttpException,
   Post,
   Req,
@@ -11,7 +10,7 @@ import {
   UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
-import { SignUpRequestDto } from 'src/auth/dtos/signup.request.dto';
+import { SignUpVerifyPasswordRequestDto } from 'src/auth/dtos/signUpVerifyPasswordRequest.request.dto';
 import { AuthService } from '../services/auth.service';
 import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
 import { HttpExceptionFilter } from 'src/common/exceptions/http-exception.filter';
@@ -26,12 +25,12 @@ export class AuthController {
 
   // 회원 가입. -------------------------------------------------------------------------
   @Post('signUp')
-  async signUp(@Body(ValidationPipe) body: SignUpRequestDto) {
+  async signUp(@Body(ValidationPipe) body: SignUpVerifyPasswordRequestDto) {
     try {
       const user = this.authService.signUp(body);
       return user;
     } catch (error) {
-      throw new HttpException('ServerError', 500);
+      throw new HttpException('Server Error', 500);
     }
   }
 
@@ -41,7 +40,7 @@ export class AuthController {
     try {
       return this.authService.signIn(body);
     } catch (error) {
-      throw new HttpException('ServerError', 500);
+      throw new HttpException('Server Error', 500);
     }
   }
 
@@ -52,12 +51,11 @@ export class AuthController {
     try {
       const user = req.user;
       await this.authService.signOut(user.id);
-
       // 여기 저기 뒤져 보니까 아래 예전에 하던 방식으로 리스폰스 가능 하단걸 깨닮..
       // 이러면 근데 인터셉터에도 안걸리네
       return res.status(200).json({ message: 'Successed Sign-Out' });
     } catch (error) {
-      throw new HttpException('ServerError', 500);
+      throw new HttpException('Server Error', 500);
     }
   }
 }
