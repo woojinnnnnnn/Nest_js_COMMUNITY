@@ -13,7 +13,7 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
   // try-catch 로 묶으니 위에서 걸리질 않음.. 
   // class-validation -------------------------------------------------------
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe( { transform: true } ));
   // CORS -------------------------------------------------------------------
   app.enableCors({ origin: true, credentials: true }); // origin 부분에 특정 URL 작성.
   await app.listen(port);

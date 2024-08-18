@@ -1,9 +1,11 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
-import { Repository } from 'typeorm';
-import { SignUpRequestDto } from '../../auth/dtos/signUp.requst.dto'
+import { Admin, Repository } from 'typeorm';
+import { SignUpRequestDto } from '../../auth/dtos/signUp.requst.dto';
 import * as bcrypt from 'bcrypt';
+import { UpdateNickNameDto } from '../dtos/update.nickname.dto';
+import { AnyTxtRecord } from 'dns';
 
 @Injectable()
 export class UserRepository {
@@ -45,7 +47,7 @@ export class UserRepository {
   }
 
   // 고윳값 기준 유저 검색. -------------------------------------------------------------------------
-  async findUserById(id: any) {
+  async findUserById(id: number) {
     try {
       const user = await this.userRepository.findOne({
         where: { id },
@@ -54,6 +56,19 @@ export class UserRepository {
       return user;
     } catch (error) {
       throw new HttpException('Server Error', 500);
+    }
+  }
+
+  // 고윳값 기준 유저 검색. 비밀번호 까지 리턴.
+  async findUserByIdWithPasswod(id: number) {
+    try {
+      const user = await this.userRepository.findOne({
+        where: { id },
+        select: ['id', 'email', 'nickName', 'password', 'createdAt']
+      })
+      return user;
+    } catch (error) {
+      throw new HttpException('Server Errror', 500)
     }
   }
 
@@ -75,6 +90,22 @@ export class UserRepository {
     } catch (error) {
       throw new HttpException('Server Error', 500);
     }
+  }
+
+  // 닉네임 변경 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  async updateUser(body: UpdateNickNameDto, user: User) {
+    user.nickName = body.nickName;
+
+    return await this.userRepository.save(user);
+  }
+
+//  회원 탈퇴 기능 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  async deleteUser(userId: number) {
+    const user = await this.userRepository.findOne({
+      where: { id : userId },
+    });
+    await this.userRepository.softDelete(userId)
+    return user
   }
 
   // 리프레쉬 토큰 해시화  --------------------------------------------------------------------

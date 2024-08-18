@@ -8,10 +8,12 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 import { UserRepository } from './repositories/user.repository';
 import { JwtStrtegy } from 'src/auth/jwt/jwt.strategy';
+import { NestjsFormDataModule } from 'nestjs-form-data';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    NestjsFormDataModule,
     TypeOrmModule.forFeature([User]),
     PassportModule.register({ defaultStrategy: 'jwt', session: false }),
     JwtModule.register({

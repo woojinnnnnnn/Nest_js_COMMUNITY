@@ -58,5 +58,3 @@ export class Comment {
   @JoinColumn({ name: 'boardId', referencedColumnName: 'id' })
   board: Board;
 }
-
-// 변경 끝

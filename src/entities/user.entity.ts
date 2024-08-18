@@ -40,6 +40,9 @@ export class User {
   @Column({ type: 'varchar', select: false })
   password: string;
 
+  @Column({ type: 'varchar', nullable: true })
+  profileImage: string;
+
   @Column({ type: 'varchar', default: UserStatus.CLIENT })
   role: UserStatus;
 
