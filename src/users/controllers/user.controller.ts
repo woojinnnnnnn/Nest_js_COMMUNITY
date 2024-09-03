@@ -7,7 +7,6 @@ import {
   Patch,
   Post,
   Req,
-  UnauthorizedException,
   UploadedFile,
   UseFilters,
   UseGuards,
@@ -20,6 +19,9 @@ import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { UpdateNickNameDto } from '../dtos/update.nickname.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { DeleteUserDto } from '../dtos/delete.user.dto';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+import { ImageUploadInterceptor } from 'src/common/interceptors/image.upload.interceptor';
 
 @Controller('users')
 @UseInterceptors(SuccessInterceptor)
@@ -54,6 +56,17 @@ export class UsersController {
   async uploadTest(@UploadedFile() profileImage: Express.Multer.File) {
     console.log(profileImage);
   }
+
+  // 파일 업로드 테스트중 - - - - - - - 
+  @UseGuards(JwtAuthGuard)
+  @Post('test')
+  @UseInterceptors(ImageUploadInterceptor)
+  async uploadFile(@UploadedFile() file: Express.Multer.File, @Req() req) {
+    const userId = req.user.id;
+    return await this.userService.upload(file, userId)
+  }
+
+  // 현재 파일은 넘버.. 일 수 가 없다고 에러 발생중.
 
     // 회원 탈퇴 - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @UseGuards(JwtAuthGuard)

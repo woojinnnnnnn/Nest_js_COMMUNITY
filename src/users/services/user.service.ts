@@ -37,6 +37,7 @@ export class UserService {
     };
   }
 
+   // 회원 탈퇴 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   async deleteUser(userId: number, body: DeleteUserDto) {
       const { password } = body;
 
@@ -52,6 +53,10 @@ export class UserService {
       }
 
       await this.userRepository.deleteUser(userId)
+  }
+
+  async upload (userId: number, body: string) {
+      const { file } = body; 
   }
 
 }
