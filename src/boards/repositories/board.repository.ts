@@ -19,10 +19,11 @@ export class BoardRepository {
   ) {}
 
   // 게시글 작성 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  async createBoard(body: CreateBoardDto, user: User) {
+  async createBoard(body: CreateBoardDto, imagePath: string, user: User) {
     const { title, content } = body;
     const board = this.boardRepository.create({
       title,
+      imageUrl: imagePath,
       content,
       user, 
     });
@@ -76,7 +77,7 @@ export class BoardRepository {
   async updateBoard(id: number, body: UpdateBoardDto, user: User) {
     try {
       const board = await this.boardRepository.findOne({
-        where: { id },
+        where: { id, deletedAt: null },
         relations: ['user'],
       });
 
@@ -94,7 +95,7 @@ export class BoardRepository {
   async deleteBoard(id: number, user: User) {
     try {
       const board = await this.boardRepository.findOne({
-        where: { id },
+        where: { id, deletedAt: null },
         relations: ['user'],
       });
       await this.boardRepository.softDelete(id);
@@ -107,7 +108,7 @@ export class BoardRepository {
   // 게시글 id 값 찾기.
   async findOneBoardId(id: number) {
     return await this.boardRepository.findOne({
-      where: { id },
+      where: { id, deletedAt: null },
     });
   }
 }

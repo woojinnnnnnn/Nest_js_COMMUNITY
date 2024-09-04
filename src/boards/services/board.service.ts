@@ -18,7 +18,7 @@ export class BoardService {
 
   // NotFoundException? 이 맞는지 모르겠네.
   // 게시글 작성 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  async createBoard(body: CreateBoardDto, userId: number) {
+  async createBoard(body: CreateBoardDto, file: Express.Multer.File, userId: number) {
     try {
       const user = await this.userRepository.findUserById(userId);
 
@@ -26,11 +26,14 @@ export class BoardService {
         throw new NotFoundException('User Not Found');
       }
 
-      const createBoard = await this.boardRepository.createBoard(body, user);
+      const imagePath = `/uploads/${file.filename}`
+
+      const createBoard = await this.boardRepository.createBoard(body, imagePath ,user);
       // 리스폰스 디티오 별도 관리 인원
       return {
         id: createBoard.id,
         title: createBoard.title,
+        imagePath: createBoard.imageUrl,
         content: createBoard.content,
         createdAt: createBoard.createdAt,
         userId: createBoard.user.id,

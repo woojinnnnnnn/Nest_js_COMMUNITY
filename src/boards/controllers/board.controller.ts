@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Req,
+  UploadedFile,
   UseFilters,
   UseGuards,
   UseInterceptors,
@@ -18,6 +19,7 @@ import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor'
 import { HttpExceptionFilter } from 'src/common/exceptions/http-exception.filter';
 import { UpdateBoardDto } from '../dtos/update.request.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
+import { ImageUploadInterceptor } from 'src/common/interceptors/image.upload.interceptor';
 
 @UseInterceptors(SuccessInterceptor)
 @UseFilters(HttpExceptionFilter)
@@ -28,9 +30,10 @@ export class BoardController {
   // 게시글 작성 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   @UseGuards(JwtAuthGuard)
   @Post()
-  async createBoard(@Body(ValidationPipe) body: CreateBoardDto, @Req() req) {
+  @UseInterceptors(ImageUploadInterceptor)
+  async createBoard(@UploadedFile() file: Express.Multer.File ,@Body(ValidationPipe) body: CreateBoardDto, @Req() req) {
     const userId = req.user.id;
-    return await this.boardService.createBoard(body, userId);
+    return await this.boardService.createBoard(body, file, userId);
   }
 
   // 게시글 전체 조회 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
