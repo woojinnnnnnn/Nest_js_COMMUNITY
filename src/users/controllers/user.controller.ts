@@ -17,11 +17,9 @@ import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor'
 import { UserService } from '../services/user.service';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { UpdateNickNameDto } from '../dtos/update.nickname.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { DeleteUserDto } from '../dtos/delete.user.dto';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
 import { ImageUploadInterceptor } from 'src/common/interceptors/image.upload.interceptor';
+import { UpdatePasswordDto } from '../dtos/update.password.dto';
 
 @Controller('users')
 @UseInterceptors(SuccessInterceptor)
@@ -57,6 +55,14 @@ export class UsersController {
   async uploadFile(@UploadedFile() file: Express.Multer.File, @Req() req) {
     const userId = req.user.id;
     await this.userService.updateProfileImage(userId, file)
+  }
+
+  // 사용자 비밀번호 변경 - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+  @UseGuards(JwtAuthGuard)
+  @Patch('/change-password')
+  async updatePassword(@Body() body: UpdatePasswordDto, @Req() req) {
+    const userId = req.user.id;
+    await this.userService.updatePassword(userId, body)
   }
 
 

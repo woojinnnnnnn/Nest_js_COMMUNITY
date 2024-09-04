@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { SignUpRequestDto } from '../../auth/dtos/signUp.requst.dto';
 import * as bcrypt from 'bcrypt';
 import { UpdateNickNameDto } from '../dtos/update.nickname.dto';
+import { UpdatePasswordDto } from '../dtos/update.password.dto';
 
 @Injectable()
 export class UserRepository {
@@ -114,6 +115,15 @@ export class UserRepository {
     user.profileImage = imagePath;
     return await this.userRepository.save(user)
   }
+
+  async updatePasswordUser(userId: number, hashedPassword: string) {
+    try {
+      await this.userRepository.update(userId, { password: hashedPassword });
+    } catch (error) {
+      throw new HttpException('Server Error', 500);
+    }
+  }
+
 
   // 리프레쉬 토큰 해시화  --------------------------------------------------------------------
   async hashedRefreshToken(id: number, refreshToken: string) {

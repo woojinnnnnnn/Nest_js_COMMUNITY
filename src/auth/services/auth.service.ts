@@ -44,7 +44,7 @@ export class AuthService {
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      const signUpUser: SignUpRequestDto = {
+      const signUpUser: SignUpRequestDto = { // 리퀘스트가 아니라 리스폰스 로 바꾸어야함,,
         email,
         nickName,
         password: hashedPassword,
