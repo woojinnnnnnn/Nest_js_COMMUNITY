@@ -1,11 +1,10 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
-import { Admin, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { SignUpRequestDto } from '../../auth/dtos/signUp.requst.dto';
 import * as bcrypt from 'bcrypt';
 import { UpdateNickNameDto } from '../dtos/update.nickname.dto';
-import { AnyTxtRecord } from 'dns';
 
 @Injectable()
 export class UserRepository {
@@ -106,6 +105,14 @@ export class UserRepository {
     });
     await this.userRepository.softDelete(userId)
     return user
+  }
+
+  // 사용자 프로필 추가 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  async updateProfileImage(userId: number, imagePath: string) {
+    const user = await this.findUserById(userId)
+
+    user.profileImage = imagePath;
+    return await this.userRepository.save(user)
   }
 
   // 리프레쉬 토큰 해시화  --------------------------------------------------------------------

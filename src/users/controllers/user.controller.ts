@@ -50,23 +50,15 @@ export class UsersController {
     return await this.userService.updateNickName(body, userId);
   }
 
-  // 사용자 프로필 추가..? 로 해야할듯 - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  @Post()
-  @UseInterceptors(FileInterceptor('profileImage'))
-  async uploadTest(@UploadedFile() profileImage: Express.Multer.File) {
-    console.log(profileImage);
-  }
-
-  // 파일 업로드 테스트중 - - - - - - - 
+  // 사용자 프로필 추가 - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   @UseGuards(JwtAuthGuard)
-  @Post('test')
+  @Post('/profileImage')
   @UseInterceptors(ImageUploadInterceptor)
   async uploadFile(@UploadedFile() file: Express.Multer.File, @Req() req) {
     const userId = req.user.id;
-    return await this.userService.upload(file, userId)
+    await this.userService.updateProfileImage(userId, file)
   }
 
-  // 현재 파일은 넘버.. 일 수 가 없다고 에러 발생중.
 
     // 회원 탈퇴 - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @UseGuards(JwtAuthGuard)

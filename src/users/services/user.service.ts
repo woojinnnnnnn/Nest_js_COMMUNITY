@@ -55,9 +55,18 @@ export class UserService {
       await this.userRepository.deleteUser(userId)
   }
 
-  async upload (userId: number, body: string) {
-      const { file } = body; 
+  // 사용자 프로필 추가 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  async updateProfileImage(userId: number, file: Express.Multer.File) {
+      const user = await this.userRepository.findUserById(userId);
+
+      if(!user) {
+            throw new NotFoundException('User Not Found')
+      }
+      const imagePath = `/uploads/${file.filename}`;
+      return this.userRepository.updateProfileImage(userId, imagePath)
   }
+
+
 
 }
 
