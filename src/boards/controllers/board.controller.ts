@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
   Param,
   Patch,
   Post,
@@ -31,22 +32,38 @@ export class BoardController {
   @UseGuards(JwtAuthGuard)
   @Post()
   @UseInterceptors(ImageUploadInterceptor)
-  async createBoard(@UploadedFile() file: Express.Multer.File ,@Body(ValidationPipe) body: CreateBoardDto, @Req() req) {
-    const userId = req.user.id;
-    return await this.boardService.createBoard(body, file, userId);
+  async createBoard(
+    @UploadedFile() file: Express.Multer.File,
+    @Body(ValidationPipe) body: CreateBoardDto,
+    @Req() req,
+  ) {
+    try {
+      const userId = req.user.id;
+      return await this.boardService.createBoard(body, file, userId);
+    } catch (error) {
+      throw new HttpException('Server Error', 500);
+    }
   }
 
   // 게시글 전체 조회 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   @Get()
   async findAllBoard() {
-    return await this.boardService.findAllBoard();
+    try {
+      return await this.boardService.findAllBoard();
+    } catch (error) {
+      throw new HttpException('Server Error', 500);
+    }
   }
 
   // 게시글 상세 보기 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   @UseGuards(JwtAuthGuard)
   @Get('/:id')
   async findOneBoard(@Param('id') id: number) {
-    return await this.boardService.findOneBoard(id);
+    try {
+      return await this.boardService.findOneBoard(id);
+    } catch (error) {
+      throw new HttpException('SErver Error', 500);
+    }
   }
 
   // 게시글 수정 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -57,15 +74,23 @@ export class BoardController {
     @Body() body: UpdateBoardDto,
     @Req() req,
   ) {
-    const userId = req.user.id;
-    return await this.boardService.updateBoard(id, body, userId);
+    try {
+      const userId = req.user.id;
+      return await this.boardService.updateBoard(id, body, userId);
+    } catch (error) {
+      throw new HttpException('Server Error', 500);
+    }
   }
 
   // 게시글 삭제 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   @UseGuards(JwtAuthGuard)
   @Delete('/:id')
   async deleteBoard(@Param('id') id: number, @Req() req) {
-    const userId = req.user.id;
-    return await this.boardService.deleteBoard(id, userId);
+    try {
+      const userId = req.user.id;
+      return await this.boardService.deleteBoard(id, userId);
+    } catch (error) {
+      throw new HttpException('Server Error', 500);
+    }
   }
 }

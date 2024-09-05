@@ -26,12 +26,12 @@ export class CommentService {
       const board = await this.boardRepository.findOneBoardId(id);
 
       if (!board) {
-        throw new NotFoundException(`Board with id ${id} not found`);
+        throw new HttpException(`Board with id ${id} not found`, 404);
       }
 
       const user = await this.userRepository.findUserById(userId);
       if (!user) {
-        throw new NotFoundException(`User with id ${userId} not found`);
+        throw new HttpException(`User with id ${userId} not found`, 404);
       }
 
       const newComment = new Comment();
@@ -48,8 +48,9 @@ export class CommentService {
       if (body.replyToId) {
         const replyTo = await this.commentRepository.findOne(body.replyToId);
         if (!replyTo) {
-          throw new NotFoundException(
+          throw new HttpException(
             `Parent comment with id ${body.replyToId} not found`,
+            404,
           );
         }
         newComment.replyTo = replyTo;
@@ -59,7 +60,7 @@ export class CommentService {
         await this.commentRepository.createComment(newComment);
       return new CommentResponseDto(savedComment);
     } catch (error) {
-      if (error instanceof NotFoundException) {
+      if (error instanceof HttpException) {
         throw error;
       } else {
         throw new HttpException('Server Error', 500);
@@ -81,15 +82,16 @@ export class CommentService {
     try {
       const user = await this.userRepository.findUserById(userId);
       if (!user) {
-        throw new NotFoundException('User Not Found');
+        throw new HttpException('User Not Found', 404);
       }
       if (!id) {
-        throw new NotFoundException(`${id}, Not Found`);
+        throw new HttpException(`${id}, Not Found`, 404);
       }
 
       if (user.id !== userId) {
-        throw new ForbiddenException(
+        throw new HttpException(
           'You Do Not Have Permission To Edit This Comment',
+          403,
         );
       }
 
@@ -106,10 +108,7 @@ export class CommentService {
         nickName: deleteComment.user.nickName,
       };
     } catch (error) {
-      if (
-        error instanceof NotFoundException ||
-        error instanceof ForbiddenException
-      ) {
+      if (error instanceof HttpException) {
         throw error;
       } else {
         throw new HttpException('Server error', 500);

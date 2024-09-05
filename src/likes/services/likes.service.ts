@@ -16,12 +16,12 @@ export class LikesService {
     try {
       const community = await this.boardRepository.findOneBoardId(boardId);
       if (!community) {
-        throw new NotFoundException('Community not found');
+        throw new HttpException('Community not found', 404);
       }
 
       const user = await this.userRepository.findUserById(userId);
       if (!user) {
-        throw new NotFoundException('User not found');
+        throw new HttpException('User not found', 404);
       }
 
       const existingLike = await this.likeRepository.findLikeByCommunityAndUser(
@@ -35,7 +35,7 @@ export class LikesService {
 
       return await this.likeRepository.addLike(boardId, userId);
     } catch (error) {
-      if (error instanceof NotFoundException) {
+      if (error instanceof HttpException) {
         throw error;
       } else {
         throw new HttpException('Server Error', 500);

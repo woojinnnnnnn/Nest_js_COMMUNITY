@@ -1,10 +1,14 @@
-import { IsNotEmpty, IsString, Matches, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsString, Matches } from 'class-validator';
 
 export class UpdatePasswordDto {
   @IsString()
   @IsNotEmpty()
+  currentPassword: string; 
+
+  @IsString()
+  @IsNotEmpty()
   @Matches(/^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,15}$/)
-  password: string;
+  changePassword: string; 
 
   @IsNotEmpty()
   verifyPassword: string;

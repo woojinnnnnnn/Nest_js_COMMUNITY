@@ -39,12 +39,13 @@ export class AuthService {
       }
 
       if (password !== verifyPassword) {
-        throw new BadRequestException('Passwords do not match');
+        throw new HttpException('Passwords do not match', 400);
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      const signUpUser: SignUpRequestDto = { // 리퀘스트가 아니라 리스폰스 로 바꾸어야함,,
+      const signUpUser: SignUpRequestDto = {
+        // 리퀘스트가 아니라 리스폰스 로 바꾸어야함,,
         email,
         nickName,
         password: hashedPassword,
@@ -54,11 +55,7 @@ export class AuthService {
 
       return user.readOnlyData;
     } catch (error) {
-      // 이렇게 분기 처리 해야, 에러가 제대로 전달.
-      if (
-        error instanceof HttpException ||
-        error instanceof BadRequestException
-      ) {
+      if (error instanceof HttpException) {
         throw error;
       } else {
         throw new HttpException('Server Error', 500);
@@ -74,7 +71,7 @@ export class AuthService {
       const user = await this.userRepository.findUserByEmail(email);
 
       if (!user) {
-        throw new NotFoundException(`Not Exist ${user}`);
+        throw new HttpException(`Not Exist ${user}`, 404);
       }
 
       const isPasswordValidated = await bcrypt.compare(password, user.password);
@@ -88,7 +85,7 @@ export class AuthService {
         return { accessToken, refreshToken };
       }
     } catch (error) {
-      if (error instanceof NotFoundException) {
+      if (error instanceof HttpException) {
         throw error;
       } else {
         throw new HttpException('Server Error', 500);
@@ -127,14 +124,14 @@ export class AuthService {
       const user = await this.userRepository.findUserById(id);
 
       if (!user) {
-        throw new NotFoundException('User Not Found');
+        throw new HttpException('User Not Found', 404);
       }
 
       const isRefreshTokenValid =
         await this.userRepository.validateRefreshToken(id, refreshToken);
 
       if (!isRefreshTokenValid) {
-        throw new UnauthorizedException('Valid Faill');
+        throw new HttpException('Valid Faill', 400);
       }
 
       const payload = { id: user.id, email: user.email, role: user.role };
@@ -147,10 +144,7 @@ export class AuthService {
 
       return tokens;
     } catch (error) {
-      if (
-        error instanceof NotFoundException ||
-        error instanceof UnauthorizedException
-      ) {
+      if (error instanceof HttpException) {
         throw error;
       } else {
         throw new HttpException('Server Error', 500);

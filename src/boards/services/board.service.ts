@@ -18,17 +18,25 @@ export class BoardService {
 
   // NotFoundException? 이 맞는지 모르겠네.
   // 게시글 작성 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  async createBoard(body: CreateBoardDto, file: Express.Multer.File, userId: number) {
+  async createBoard(
+    body: CreateBoardDto,
+    file: Express.Multer.File,
+    userId: number,
+  ) {
     try {
       const user = await this.userRepository.findUserById(userId);
 
       if (!user) {
-        throw new NotFoundException('User Not Found');
+        throw new HttpException('User Not Found', 500);
       }
 
-      const imagePath = `/uploads/${file.filename}`
+      const imagePath = `/uploads/${file.filename}`;
 
-      const createBoard = await this.boardRepository.createBoard(body, imagePath ,user);
+      const createBoard = await this.boardRepository.createBoard(
+        body,
+        imagePath,
+        user,
+      );
       // 리스폰스 디티오 별도 관리 인원
       return {
         id: createBoard.id,
@@ -41,7 +49,7 @@ export class BoardService {
         nickName: createBoard.user.nickName,
       };
     } catch (error) {
-      if (error instanceof NotFoundException) {
+      if (error instanceof HttpException) {
         throw error;
       } else {
         throw new HttpException('Server Error', 500);
@@ -63,11 +71,11 @@ export class BoardService {
     try {
       const board = await this.boardRepository.findOneBoard(id);
       if (!board) {
-        throw new NotFoundException(`Community with id ${id} not found.`);
+        throw new HttpException(`Community with id ${id} not found.`, 500);
       }
       return board;
     } catch (error) {
-      if (error instanceof NotFoundException) {
+      if (error instanceof HttpException) {
         throw error;
       } else {
         throw new HttpException('Server Error', 500);
@@ -80,7 +88,7 @@ export class BoardService {
     try {
       const user = await this.userRepository.findUserById(userId);
       if (!user) {
-        throw new NotFoundException('User Not Found');
+        throw new HttpException('User Not Found', 500);
       }
 
       const updateBoard = await this.boardRepository.updateBoard(
@@ -91,12 +99,13 @@ export class BoardService {
 
       // 해당 게시판이 존재 하지 않을 시.
       if (!updateBoard) {
-        throw new NotFoundException(`Board with id ${id} not found`);
+        throw new HttpException(`Board with id ${id} not found`, 404);
       }
       // 해당 게시판 권한이 없을 시.
       if (updateBoard.user.id !== user.id) {
-        throw new ForbiddenException(
+        throw new HttpException(
           'You Do Not Have Permission To Edit This Post',
+          403,
         );
       }
 
@@ -112,10 +121,7 @@ export class BoardService {
         nickName: updateBoard.user.nickName,
       };
     } catch (error) {
-      if (
-        error instanceof NotFoundException ||
-        error instanceof ForbiddenException
-      ) {
+      if (error instanceof HttpException) {
         throw error;
       } else {
         throw new HttpException('Server Error', 500);
@@ -128,17 +134,18 @@ export class BoardService {
     try {
       const user = await this.userRepository.findUserById(userId);
       if (!user) {
-        throw new NotFoundException('User Not Found');
+        throw new HttpException('User Not Found', 400);
       }
       const deleteBoard = await this.boardRepository.deleteBoard(id, user);
 
       if (!deleteBoard) {
-        throw new NotFoundException(`Board with id ${id} not found`);
+        throw new HttpException(`Board with id ${id} not found`, 404);
       }
 
       if (deleteBoard.user.id !== user.id) {
-        throw new ForbiddenException(
+        throw new HttpException(
           'You Do Not Have Permission To Edit This Post',
+          403,
         );
       }
 
@@ -157,11 +164,7 @@ export class BoardService {
         nickName: deleteBoard.user.nickName,
       };
     } catch (error) {
-      if (
-        error instanceof NotFoundException ||
-        error instanceof ForbiddenException ||
-        error instanceof HttpException
-      ) {
+      if (error instanceof HttpException) {
         throw error;
       } else {
         throw new HttpException('Server Error', 500);

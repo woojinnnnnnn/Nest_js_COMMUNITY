@@ -116,12 +116,21 @@ export class UserRepository {
     return await this.userRepository.save(user)
   }
 
+  // 사용자 비밀번호 변경 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   async updatePasswordUser(userId: number, hashedPassword: string) {
     try {
       await this.userRepository.update(userId, { password: hashedPassword });
     } catch (error) {
       throw new HttpException('Server Error', 500);
     }
+  }
+
+  async findUserByIdAndIncludePassword(userId: number) {
+    // 비밀번호 필드를 명시적으로 포함시킵니다.
+    return await this.userRepository.findOne({
+      where: { id: userId, deletedAt: null },
+      select: ['id', 'email', 'nickName', 'role', 'createdAt', 'password'], // 'password' 필드 추가
+    });
   }
 
 

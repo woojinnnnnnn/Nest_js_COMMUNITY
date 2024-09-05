@@ -78,7 +78,7 @@ export class ReportsService {
       const reportedUser =
         await this.userRepository.findUserById(reportedUserId);
       if (!reportedUser) {
-        throw new NotFoundException('User Not Found');
+        throw new HttpException('User Not Found', 404);
       }
       const report = await this.reportRepository.createUserReport(
         body,
@@ -93,7 +93,7 @@ export class ReportsService {
         reporter: report.reporter,
       };
     } catch (error) {
-      if (error instanceof NotFoundException) {
+      if (error instanceof HttpException) {
         throw error;
       } else {
         throw new HttpException('Server Error', 500);
@@ -110,7 +110,7 @@ export class ReportsService {
       const reportedBoard =
         await this.boardRepository.findOneBoardId(reportedBoardId);
       if (!reportedBoard) {
-        throw new NotFoundException('Comuunity nottr founddddd');
+        throw new HttpException('Comuunity Not Found', 404);
       }
       const report = await this.reportRepository.createBoardReport(
         body,
@@ -125,7 +125,7 @@ export class ReportsService {
         reporter: report.reporter,
       };
     } catch (error) {
-      if (error instanceof NotFoundException) {
+      if (error instanceof HttpException) {
         throw error;
       } else {
         throw new HttpException('Server Error', 500);
@@ -142,7 +142,7 @@ export class ReportsService {
       const reportedComment =
         await this.commentRepository.findOne(reportedCommentId);
       if (!reportedComment) {
-        throw new NotFoundException('Comment not found');
+        throw new HttpException('Comment not found', 404);
       }
       const report = await this.reportRepository.createCommentReport(
         body,
@@ -157,7 +157,7 @@ export class ReportsService {
         reporter: report.reporter,
       };
     } catch (error) {
-      if (error instanceof NotFoundException) {
+      if (error instanceof HttpException) {
         throw error;
       } else {
         throw new HttpException('Server Error', 500);

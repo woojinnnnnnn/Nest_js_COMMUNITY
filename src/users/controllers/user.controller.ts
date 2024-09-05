@@ -44,8 +44,12 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Patch('/change-nickName')
   async updateNickName(@Body() body: UpdateNickNameDto, @Req() req) {
-    const userId = req.user.id;
-    return await this.userService.updateNickName(body, userId);
+    try {
+      const userId = req.user.id;
+      return await this.userService.updateNickName(body, userId);
+    } catch (error) {
+      throw new HttpException('Server Errror', 500);
+    }
   }
 
   // 사용자 프로필 추가 - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -53,27 +57,36 @@ export class UsersController {
   @Post('/profileImage')
   @UseInterceptors(ImageUploadInterceptor)
   async uploadFile(@UploadedFile() file: Express.Multer.File, @Req() req) {
-    const userId = req.user.id;
-    await this.userService.updateProfileImage(userId, file)
+    try {
+      const userId = req.user.id;
+      await this.userService.updateProfileImage(userId, file);
+    } catch (error) {
+      throw new HttpException('Server Errror', 500);
+    }
   }
 
-  // 사용자 비밀번호 변경 - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+  // 사용자 비밀번호 변경 - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   @UseGuards(JwtAuthGuard)
   @Patch('/change-password')
   async updatePassword(@Body() body: UpdatePasswordDto, @Req() req) {
-    const userId = req.user.id;
-    await this.userService.updatePassword(userId, body)
+    try {
+      const userId = req.user.id;
+      await this.userService.updatePassword(userId, body);
+    } catch (error) {
+      throw new HttpException('Server Error', 500);
+    }
   }
 
-
-    // 회원 탈퇴 - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    @UseGuards(JwtAuthGuard)
-    @Delete()
-    async deleteUser(@Body() body: DeleteUserDto, @Req() req) {
+  // 회원 탈퇴 - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  @UseGuards(JwtAuthGuard)
+  @Delete()
+  async deleteUser(@Body() body: DeleteUserDto, @Req() req) {
+    try {
       const userId = req.user.id;
-      await this.userService.deleteUser(userId, body)
-      return { message: 'Success' }
+      await this.userService.deleteUser(userId, body);
+      return { message: 'Success' };
+    } catch (error) {
+      throw new HttpException('SErver Error', 500);
     }
-
-
+  }
 }

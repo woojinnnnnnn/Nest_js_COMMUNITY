@@ -112,6 +112,3 @@ export class BoardRepository {
     });
   }
 }
-
-
-// 확인 끝
