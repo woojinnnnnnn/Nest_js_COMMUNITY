@@ -11,7 +11,6 @@ import {
   UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
-import { Response } from 'express';
 import { SignUpVerifyPasswordRequestDto } from 'src/auth/dtos/signUpVerifyPasswordRequest.request.dto';
 import { AuthService } from '../services/auth.service';
 import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
@@ -28,7 +27,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   // 회원 가입. -------------------------------------------------------------------------
-  @Post('/signUp')
+  @Post('signUp')
   async signUp(@Body(ValidationPipe) body: SignUpVerifyPasswordRequestDto) {
     try {
       const user = this.authService.signUp(body);
@@ -39,7 +38,7 @@ export class AuthController {
   }
 
   // 로그인. -------------------------------------------------------------------------
-  @Post('/signIn')
+  @Post('signIn')
   async signIn(@Body() body: SignInRequestDto) {
     try {
       return this.authService.signIn(body);
@@ -50,7 +49,7 @@ export class AuthController {
 
   // 로그아웃. -------------------------------------------------------------------------
   @UseGuards(JwtAuthGuard)
-  @Post('/signOut')
+  @Post('signOut')
   async signOut(@Req() req, @Res() res) {
     try {
       const user = req.user;
@@ -63,13 +62,13 @@ export class AuthController {
     }
   }
 
-  @Get('/google/login')
+  @Get('google/login')
   @UseGuards(GoogleAuthGuard)
   async googleAuth(@Req() req) {
     console.log('GET GOOGLE/LOGIN')
   }
 
-  @Get('/google/callback')
+  @Get('google/callback')
   @UseGuards(GoogleAuthGuard)
   async googleAuthRedirect(@Req() req) {
     const user = req.user as User;
