@@ -18,7 +18,7 @@ import { HttpExceptionFilter } from 'src/common/exceptions/http-exception.filter
 import { SignInRequestDto } from '../dtos/signIn.request.dto';
 import { JwtAuthGuard } from '../jwt/jwt.guard';
 import { GoogleAuthGuard } from '../jwt/jwt.google.guard';
-import { User } from 'src/entities/user.entity';
+import { User, UserStatus } from 'src/entities/user.entity';
 
 @Controller('auth')
 @UseInterceptors(SuccessInterceptor)
@@ -65,13 +65,18 @@ export class AuthController {
   @Get('google/login')
   @UseGuards(GoogleAuthGuard)
   async googleAuth(@Req() req) {
-    console.log('GET GOOGLE/LOGIN')
+    console.log('GET GOOGLE/LOGIN');
   }
 
   @Get('google/callback')
   @UseGuards(GoogleAuthGuard)
-  async googleAuthRedirect(@Req() req) {
+  async googleAuthRedirect(@Req() req, @Res() res) {
     const user = req.user as User;
-    return user
-   }
+    const tokens = await this.authService.createTokensSocialLogin({
+      id: user.id,
+      email: user.email,
+      role: UserStatus.CLIENT,
+    });
+    res.json(tokens);
+  }
 }

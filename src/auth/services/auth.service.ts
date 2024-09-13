@@ -152,4 +152,19 @@ export class AuthService {
       }
     }
   }
+
+  async createTokensSocialLogin(user: { id: number; email: string; role: string }) {
+    const tokens = await this.createToken({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    });
+  
+    await this.userRepository.hashedRefreshToken(user.id, tokens.refreshToken);
+  
+    return {
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+    };
+  }
 }
