@@ -1,6 +1,6 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/entities/user.entity';
+import { User, UserStatus } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { SignUpRequestDto } from '../../auth/dtos/signUp.requst.dto';
 import * as bcrypt from 'bcrypt';
@@ -125,12 +125,30 @@ export class UserRepository {
     }
   }
 
+  // 찾을때 Password 필드가 필요한 부분이 있어서 추가 - - - - - - - - - -- - - - - - - - - - - - - - - - -
   async findUserByIdAndIncludePassword(userId: number) {
-    // 비밀번호 필드를 명시적으로 포함시킵니다.
     return await this.userRepository.findOne({
       where: { id: userId, deletedAt: null },
-      select: ['id', 'email', 'nickName', 'role', 'createdAt', 'password'], // 'password' 필드 추가
+      select: ['id', 'email', 'nickName', 'role', 'createdAt', 'password'],
     });
+  }
+
+  // Google 소셜 로그인 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  async findByEmailOrSave(email: string, profile: any) {
+    let user = await this.findUserByEmail(email);
+
+    if(!user) {
+      user = this.userRepository.create({
+        email: email,
+        nickName: profile.name.givenName,
+        password: '',
+        profileImage: profile.photos[0]?.value,
+        role: UserStatus.CLIENT
+      });
+
+      await this.userRepository.save(user)
+    }
+    return user
   }
 
 

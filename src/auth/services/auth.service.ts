@@ -13,6 +13,7 @@ import { UserRepository } from 'src/users/repositories/user.repository';
 import { ConfigService } from '@nestjs/config';
 import { SignUpRequestDto } from '../dtos/signUp.requst.dto';
 import { SignUpVerifyPasswordRequestDto } from 'src/auth/dtos/signUpVerifyPasswordRequest.request.dto';
+import { User } from 'src/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -151,4 +152,19 @@ export class AuthService {
       }
     }
   }
+
+  // 구글 소셜 로그인 토큰 부여. ----------------------------------------------------------------------------
+async createTokensForGoogle(user: User) {
+  try {
+    const payload = { id: user.id, email: user.email, role: user.role };
+    const tokens = await this.createToken(payload);
+
+    return {
+      user,
+      ...tokens,
+    };
+  } catch (error) {
+    throw new HttpException('Server error', 500);
+  }
+}
 }

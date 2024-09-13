@@ -29,7 +29,7 @@ export class UserService {
       const isExistNickName =
         await this.userRepository.findUserByNickName(nickName);
       if (isExistNickName) {
-        throw new HttpException('Nickname already in use', 402);
+        throw new HttpException('Nickname already in use', 409);
       }
 
       await this.userRepository.updateUser(body, user);
