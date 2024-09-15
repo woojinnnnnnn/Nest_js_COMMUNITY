@@ -15,7 +15,7 @@ async function bootstrap() {
   // class-validation -------------------------------------------------------
   app.useGlobalPipes(new ValidationPipe( { transform: true } ));
   // CORS -------------------------------------------------------------------
-  app.enableCors({ origin: true, credentials: true }); // origin 부분에 특정 URL 작성.
+  app.enableCors({ origin: 'http://localhost:3000', credentials: true }); // origin 부분에 특정 URL 작성.
   await app.listen(port);
   console.log(`---------- SERVER_START_ON_PORT ${port} ----------`);
 }

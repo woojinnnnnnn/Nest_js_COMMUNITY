@@ -13,6 +13,7 @@ import { Comment } from './comment.entity';
 import { Like } from './like.entity';
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { Report } from './report.entity';
+import { Notification } from './notification';
 
 export enum UserStatus {
   ADMIN = 'ADMIN',
@@ -43,6 +44,12 @@ export class User {
   @Column({ type: 'varchar', nullable: true })
   profileImage: string;
 
+  @Column({ type: 'boolean', default: false })
+  isVerfied: boolean;
+
+  @Column({ type: 'varchar', nullable: true })
+  verificationCode: string;
+
   @Column({ type: 'varchar', default: UserStatus.CLIENT })
   role: UserStatus;
 
@@ -69,6 +76,9 @@ export class User {
 
   @OneToMany(() => Report, (report) => report.user)
   report: Report[];
+
+  @OneToMany(() => Notification, (notifications) => notifications.user)
+  notifications: Notification[]
 
   readonly readOnlyData: {
     email: string;

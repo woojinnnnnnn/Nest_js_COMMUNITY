@@ -36,7 +36,7 @@ export class CommentController {
       const userId = req.user.id;
       return this.commentService.createComment(boardId, body, userId);
     } catch (error) {
-      throw new HttpException('Server Error', 500);
+      throw new HttpException(error.message, 500);
     }
   }
 

@@ -9,6 +9,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from 'src/users/user.module';
 import { JwtStrtegy } from './jwt/jwt.strategy';
 import { GoogleStrategy } from './jwt/jwt.google.strategy';
+import { EmailService } from 'src/email/email.service';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { GoogleStrategy } from './jwt/jwt.google.strategy';
     forwardRef(() => UsersModule),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtService, JwtStrtegy,GoogleStrategy],
+  providers: [AuthService, JwtService, JwtStrtegy, GoogleStrategy, EmailService],
   exports: [AuthService],
 })
 export class AuthModule {}

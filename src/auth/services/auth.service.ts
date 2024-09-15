@@ -1,9 +1,6 @@
 import {
-  BadRequestException,
   HttpException,
   Injectable,
-  NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { SignInRequestDto } from '../dtos/signIn.request.dto';
@@ -14,6 +11,7 @@ import { ConfigService } from '@nestjs/config';
 import { SignUpRequestDto } from '../dtos/signUp.requst.dto';
 import { SignUpVerifyPasswordRequestDto } from 'src/auth/dtos/signUpVerifyPasswordRequest.request.dto';
 import { User } from 'src/entities/user.entity';
+import { EmailService } from 'src/email/email.service';
 
 @Injectable()
 export class AuthService {
@@ -21,6 +19,7 @@ export class AuthService {
     private userRepository: UserRepository,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private emailService: EmailService,
   ) {}
 
   // 회원 가입 ------------------------------------------------------------------------------------
@@ -153,7 +152,10 @@ export class AuthService {
     }
   }
 
+  // 소셜 로그인 토큰 부여. ------------------------------------------------------------------------------------
   async createTokensSocialLogin(user: { id: number; email: string; role: string }) {
+    await this.userRepository.socialLoginVerified(user.id);
+
     const tokens = await this.createToken({
       id: user.id,
       email: user.email,
@@ -166,5 +168,59 @@ export class AuthService {
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
     };
+  }
+
+  // 이메일 관련 서비스 로직. ------------------------------------------------------------------------------------
+  // 인증 코드 생성.
+  async generateVerificationCode() {
+    return Math.floor(10000 + Math.random() * 90000).toString();
+  }
+
+  // 유효성 검사 후 -> 입력한 이메일로 확인 코드 전송 
+  async emailSignUp(body: SignUpVerifyPasswordRequestDto) {
+    const { email, password, verifyPassword, nickName } = body;
+    const isExistUser = await this.userRepository.findUserByEmail(email)
+    
+    if(isExistUser) {
+      throw new HttpException(`${email} is already exists`, 409)
+    }
+
+    if(password !== verifyPassword) {
+      throw new HttpException('Password do Not Match', 400)
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = await this.userRepository.createUser({
+      email,
+      nickName,
+      password: hashedPassword,
+    });
+
+    return newUser;
+  }
+
+  // 코드 보내기.
+  async sendVerificationCode(user: User) {
+    const code = await this.generateVerificationCode()
+    user.verificationCode = code;
+    await this.userRepository.temporarSaveUser(user)
+
+    await this.emailService.sendVerificationToEmail(user.email, code)
+  }
+
+  // 코드 확인 함수
+  async verifyEmail(email: string, code: string) {
+    const user = await this.userRepository.findUserByEmail(email)
+
+    if(!user) {
+      throw new HttpException('User Not Found', 404)
+    }
+
+    if(user.verificationCode !== code) {
+      throw new HttpException('Invalid Verificaion code', 400)
+    }
+
+    user.isVerfied = true;
+    user.verificationCode = null;
+    await this.userRepository.temporarSaveUser(user)
   }
 }

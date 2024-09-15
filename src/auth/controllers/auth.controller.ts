@@ -19,6 +19,7 @@ import { SignInRequestDto } from '../dtos/signIn.request.dto';
 import { JwtAuthGuard } from '../jwt/jwt.guard';
 import { GoogleAuthGuard } from '../jwt/jwt.google.guard';
 import { User, UserStatus } from 'src/entities/user.entity';
+import { VerifyEmailDto } from '../dtos/verify.email.dto';
 
 @Controller('auth')
 @UseInterceptors(SuccessInterceptor)
@@ -62,12 +63,14 @@ export class AuthController {
     }
   }
 
+  // 구글 소셜 로그인 할 경로. -------------------------------------------------------------------------
   @Get('google/login')
   @UseGuards(GoogleAuthGuard)
   async googleAuth(@Req() req) {
     console.log('GET GOOGLE/LOGIN');
   }
 
+  // 구글 소셜 로그인 로그인 후 해당 페이지로 연결 경로.-------------------------------------------------------------------------
   @Get('google/callback')
   @UseGuards(GoogleAuthGuard)
   async googleAuthRedirect(@Req() req, @Res() res) {
@@ -79,4 +82,27 @@ export class AuthController {
     });
     res.json(tokens);
   }
+
+  // 아직 네이버 밖에 메일 관련 서비스를 세팅 해두지 않아서 기존의 로컬 로그인 방식은 유지.
+  // 네이버 인증 메일 전송. ----------------------------------------------------------------------------------- - - - - - - - -
+  @Post('email-SignUp')
+  async emailSignUp(@Body(ValidationPipe) body: SignUpVerifyPasswordRequestDto) {
+    try {
+      const user = await this.authService.emailSignUp(body)
+      await this.authService.sendVerificationCode(user)
+      return { message: 'Sign-up Successful Plesae check Ur email for the Verification Code' }
+    } catch (error) {
+      throw new HttpException('Server Errror', 500)
+    }
+  }
+ // 네이버 인증 메일 코드 확인. ----------------------------------------------------------------------------------- - - - - - - - -
+  @Post('verify-email')
+  async verifyEmail(@Body(ValidationPipe) body: VerifyEmailDto) {
+    try {
+      await this.authService.verifyEmail(body.email, body.verificationCode)
+    } catch (error) {
+      throw new HttpException(error.message || 'Server Error', 500)
+    }
+  }
+
 }

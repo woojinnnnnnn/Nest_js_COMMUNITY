@@ -15,6 +15,8 @@ import { Report } from './entities/report.entity';
 import { CommentModule } from './comments/comment.module';
 import { LikesModule } from './likes/likes.module';
 import { ReportsModule } from './reports/reports.module';
+import { EmailService } from './email/email.service';
+import { Notification } from './entities/notification';
 
 @Module({
   imports: [
@@ -26,7 +28,7 @@ import { ReportsModule } from './reports/reports.module';
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [User, Board, Comment, Like, Report],
+      entities: [User, Board, Comment, Like, Report, Notification],
       synchronize: false,
       logging: true,
       keepConnectionAlive: true,
@@ -40,7 +42,7 @@ import { ReportsModule } from './reports/reports.module';
     ReportsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, EmailService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

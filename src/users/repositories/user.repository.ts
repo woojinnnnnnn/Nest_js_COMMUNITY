@@ -25,6 +25,7 @@ export class UserRepository {
           'nickName',
           'role',
           'password',
+          'verificationCode',
           'hashedRefreshToken',
           'createdAt',
           'updatedAt',
@@ -79,6 +80,10 @@ export class UserRepository {
     } catch (error) {
       throw new HttpException('Server Error', 500);
     }
+  }
+
+  async temporarSaveUser(user: User) {
+    return this.userRepository.save(user)
   }
 
   // 로그아웃.  ----------------------------------------------------------------------------
@@ -150,6 +155,16 @@ export class UserRepository {
     }
     return user
   }
+  // Google 소셜 로그인시.. 이메일 인증 상태 업데이트
+  async socialLoginVerified(userId: number): Promise<void> {
+    try {
+      await this.userRepository.update(userId, {
+        isVerfied: true,
+      });
+    } catch (error) {
+      throw new HttpException('Server Error while verifying social login', 500);
+    }
+  }
 
 
   // 리프레쉬 토큰 해시화  --------------------------------------------------------------------
@@ -178,3 +193,6 @@ export class UserRepository {
     }
   }
 }
+
+
+// 잠시 구글링 시간.
