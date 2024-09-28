@@ -5,7 +5,6 @@ import { Repository } from 'typeorm';
 import { SignUpRequestDto } from '../../auth/dtos/signUp.requst.dto';
 import * as bcrypt from 'bcrypt';
 import { UpdateNickNameDto } from '../dtos/update.nickname.dto';
-import { UpdatePasswordDto } from '../dtos/update.password.dto';
 
 @Injectable()
 export class UserRepository {
@@ -13,6 +12,29 @@ export class UserRepository {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {}
+
+  async findOne(whereOptions: any) {
+    return await this.userRepository.findOne({
+      where: whereOptions,
+    });
+  }
+
+  // SQL
+  // async findUserQueryById(id: number, email: string) {
+  //   return await this.userRepository.query(
+  //     `
+  //   SELECT *
+  //   FROM USER
+  //   WHERE id = $1
+  //   AND email = $2
+  //   `,
+  //     [id, email],
+  //   );
+  // }
+
+  // async findUserById2() {
+  //   return await this.userRepository.createQueryBuilder('user').where().select()
+  // }
 
   // 이메일 기준 유저 검색. -------------------------------------------------------------------------
   async findUserByEmail(email: string) {
@@ -65,11 +87,11 @@ export class UserRepository {
     try {
       const user = await this.userRepository.findOne({
         where: { id },
-        select: ['id', 'email', 'nickName', 'password', 'createdAt']
-      })
+        select: ['id', 'email', 'nickName', 'password', 'createdAt'],
+      });
       return user;
     } catch (error) {
-      throw new HttpException('Server Errror', 500)
+      throw new HttpException('Server Errror', 500);
     }
   }
 
@@ -83,7 +105,7 @@ export class UserRepository {
   }
 
   async temporarSaveUser(user: User) {
-    return this.userRepository.save(user)
+    return this.userRepository.save(user);
   }
 
   // 로그아웃.  ----------------------------------------------------------------------------
@@ -104,21 +126,21 @@ export class UserRepository {
     return await this.userRepository.save(user);
   }
 
-//  회원 탈퇴 기능 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  //  회원 탈퇴 기능 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   async deleteUser(userId: number) {
     const user = await this.userRepository.findOne({
-      where: { id : userId },
+      where: { id: userId },
     });
-    await this.userRepository.softDelete(userId)
-    return user
+    await this.userRepository.softDelete(userId);
+    return user;
   }
 
   // 사용자 프로필 추가 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   async updateProfileImage(userId: number, imagePath: string) {
-    const user = await this.findUserById(userId)
+    const user = await this.findUserById(userId);
 
     user.profileImage = imagePath;
-    return await this.userRepository.save(user)
+    return await this.userRepository.save(user);
   }
 
   // 사용자 비밀번호 변경 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -142,18 +164,18 @@ export class UserRepository {
   async findByEmailOrSave(email: string, profile: any) {
     let user = await this.findUserByEmail(email);
 
-    if(!user) {
+    if (!user) {
       user = this.userRepository.create({
         email: email,
         nickName: profile.name.givenName,
         password: '',
         profileImage: profile.photos[0]?.value,
-        role: UserStatus.CLIENT
+        role: UserStatus.CLIENT,
       });
 
-      await this.userRepository.save(user)
+      await this.userRepository.save(user);
     }
-    return user
+    return user;
   }
   // Google 소셜 로그인시.. 이메일 인증 상태 업데이트
   async socialLoginVerified(userId: number): Promise<void> {
@@ -165,7 +187,6 @@ export class UserRepository {
       throw new HttpException('Server Error while verifying social login', 500);
     }
   }
-
 
   // 리프레쉬 토큰 해시화  --------------------------------------------------------------------
   async hashedRefreshToken(id: number, refreshToken: string) {
@@ -193,6 +214,5 @@ export class UserRepository {
     }
   }
 }
-
 
 // 잠시 구글링 시간.

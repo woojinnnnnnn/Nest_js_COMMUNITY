@@ -17,7 +17,6 @@ import { LikesModule } from './likes/likes.module';
 import { ReportsModule } from './reports/reports.module';
 import { EmailService } from './email/email.service';
 import { Notification } from './entities/notification';
-import { FirebaseModule } from './firebase/firebase.module';
 
 @Module({
   imports: [
@@ -41,7 +40,6 @@ import { FirebaseModule } from './firebase/firebase.module';
     CommentModule,
     LikesModule,
     ReportsModule,
-    FirebaseModule,
   ],
   controllers: [AppController],
   providers: [AppService, EmailService],
